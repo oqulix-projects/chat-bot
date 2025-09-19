@@ -1,0 +1,14 @@
+*{
+  margin: 0px;
+  font-family: "Lexend", sans-serif;
+}
+.three-div{
+  margin-top: 100px;
+  /* background-color: aqua; */
+  height: 100%;
+  /* transform: scale(1.6); */
+}
+body{
+      background-color: #161b20;
+
+}

@@ -1,0 +1,39 @@
+.switch-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.08); /* frosted glass base */
+  border-radius: 50px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  margin: 10px auto 0px;
+}
+
+.switch-btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  color: #e0e0e0;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.switch-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.switch-btn.active {
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 120, 255, 0.4);
+}

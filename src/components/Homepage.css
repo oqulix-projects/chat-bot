@@ -1,0 +1,259 @@
+.main-container{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.upload-tab{
+    background-color: rgb(41, 40, 40);
+    height: 95vh;
+    border-radius: 20px;
+    padding: 10px;
+    justify-self: right;
+}
+.app-container{
+    display: flex;
+    padding: 15px;
+
+}
+.chat-window {
+    padding: 15px;
+    margin: 10px auto;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    border-radius: 12px;
+    background-color: #1e1e1e;
+    z-index: 1;
+
+    /* Inner shadow */
+    box-shadow: inset 5px 5px 50px rgba(0, 0, 0, 1);
+}
+
+.app-grid{
+    background-color: #3b3c3d;
+    border-radius: 12px;
+    max-height: 75vh;
+    padding: 20px;
+}
+
+
+.message-bubble {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* user bubble */
+.bubble-user {
+  background-color: #0b62ad;
+  border-bottom-right-radius: 4px;
+}
+
+/* bot bubble */
+.bubble-bot {
+  background-color: #2d2d2d;
+  border-bottom-left-radius: 4px;
+}
+
+/* empty text style */
+.empty-text {
+  text-align: center;
+  color: #888;
+  margin-top: 20px;
+}
+/* input */
+.chat-input-container {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid #333;
+  gap: 10px;
+  z-index: 2;
+  margin-top: 70px;
+  position: fixed;
+  width: 800px;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+@media (max-width:600px){
+  .chat-input-container{
+    width: 95%;
+  }
+  .subtitle{
+    display: none;
+  }
+  .title{
+    font-size: 15px !important;
+  }
+}
+/* Text input */
+.chat-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  outline: none;
+  border-radius: 20px;
+  font-size: 15px;
+  background-color: #2a2a2a;
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.chat-input::placeholder {
+  color: #888;
+}
+.chat-input:focus {
+  background-color: #333;
+  box-shadow: 0 0 0 2px #0b62ad;
+}
+
+/* Ask button */
+.ask-button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  background: #0b62ad;
+  color: #fff;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.ask-button:hover {
+  background: #005fcc;
+}
+
+.ask-button:active {
+  transform: scale(0.96);
+}
+
+.ask-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+
+
+/* upload style */
+.upload-tab {
+  background: #3b3c3d;
+  padding: 20px;
+  border-radius: 12px;
+  color: #fff;
+  height: fit-content;
+  z-index: 10;
+  /* width: 100px; */
+  display: flex;
+  align-items: center;
+}
+.upload-column {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  
+}
+.upload-tab-main{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+.section-title {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+}
+.section-title h1{
+  font-weight: 200;
+  color: white;
+  font-size: 25px;
+}
+
+.sub-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 10px;
+  color: #ddd;
+}
+
+
+
+/* Upload button */
+.logout-button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #0b62ad;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  /* width: 60%; */
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background: #005fcc;
+}
+
+.upload-button:active {
+  transform: scale(0.97);
+}
+
+.upload-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+/* Dropdown select */
+select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
+
+
+
+/* Empty / error messages */
+.empty-text {
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+
+.error-text {
+  color: #ff4d4d;
+  font-size: 14px;
+}
+.subtitle{
+  position: fixed;
+  color: whitesmoke;
+  top: 15%;
+  width: 500px;
+  text-align: left;
+  margin: -100px;
+  height: fit-content;
+  overflow-y: hidden;
+  animation: subtitleOpen 6s;
+  /* background-color:#3b3c3d; */
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 10;
+  right: 120px;
+}
+
