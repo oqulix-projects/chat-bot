@@ -18,6 +18,7 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const [language, setlanguage] = useState("english");
   const [subtitle, setSubtitle] = useState("");
+  const [background,setBackground]=useState('')
 
   const [talking, setTalking] = useState(false);
 
@@ -157,7 +158,7 @@ const Homepage = () => {
 
         // const idToken = await auth.currentUser.getIdToken();
 
-        const resp = await fetch("http://localhost:4000/speak", {
+        const resp = await fetch("https://oqulix-chat-server.onrender.com/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -253,8 +254,24 @@ const Homepage = () => {
 
   // Example usage after chatbot response:
 
+  const handleCheckboxChange = (e) => {
+    if (e.target.checked) {
+      setBackground("url('/bg1.avif')"); // assuming bg1.jpg is inside /public
+    } else {
+      setBackground(""); // remove background if unchecked
+    }
+  };
+
   return (
     <div className="main-container">
+      <label className="check-box">
+        <input
+          type="checkbox"
+          
+          onChange={handleCheckboxChange}
+        />
+        Use Background
+      </label> 
       <div className="app-container">
         <div className="app-grid">
           {/* Upload column */}
@@ -306,11 +323,10 @@ const Homepage = () => {
           </select>
         </div> */}
 
-            <div className="chat-window">
-              <CharacterModel talking={talking} />
-
+            <div className="chat-window" style={background!=''?{backgroundImage:background,backgroundSize:'cover'}:{backgroundImage:''}}>
+              <CharacterModel talking={talking} background={background}/>
             </div>
-            <div className="chat-input-container">
+           <div className="chat-input-container">
                 <input
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}

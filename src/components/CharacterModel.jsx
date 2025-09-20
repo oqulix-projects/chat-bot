@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import './CharacterModel.css'
+import SkySphere from './SkySphere';
 
 
 // You will need to serve your model from a public folder or CDN.
@@ -66,11 +67,11 @@ const Model = ({ currentAction }) => {
 
   // We are scaling the model down to 30% of its original size
   // and setting the camera's initial position to see the entire model.
-  return <primitive ref={modelRef} object={scene} scale={0.06} position={[0, -2.4, 0]} />;
+  return <primitive ref={modelRef} object={scene} scale={0.06} position={[0, -2.4, 0]} castShadow />;
 };
 
 // Parent component that holds the Canvas and UI
-const CharacterModel = ({ talking }) => {
+const CharacterModel = ({ talking, background }) => {
   const idleStates = [
     "idle1","idle2","idle5","idle6",
     "idle7","idle8","idle9","idle10","idle11"
@@ -118,9 +119,23 @@ const CharacterModel = ({ talking }) => {
     <>
       <div className="container">
         <div className="canvas-container">
-          <Canvas camera={{ position: [0, 0.1, 6] }}>
+          <Canvas shadows camera={{ position: [0, 0.1, 6] }}>
+            {background!=''&&<SkySphere/>}
+
+<mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.4, 0]} receiveShadow>
+  <planeGeometry args={[20, 20]} />
+  <shadowMaterial opacity={0.4} />
+</mesh>
+
+
             <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
+<directionalLight
+  position={[10, 10, 5]}
+  intensity={1}
+  castShadow
+  shadow-mapSize-width={2048}
+  shadow-mapSize-height={2048}
+/>
             <Suspense fallback={<Html center><span className="loading-text">Loading...</span></Html>}>
               <Model currentAction={action} />
             </Suspense>

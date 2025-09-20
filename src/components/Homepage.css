@@ -6,7 +6,7 @@
   align-items: center;
 }
 .upload-tab{
-    background-color: rgb(41, 40, 40);
+    /* background-color: rgb(41, 40, 40); */
     height: 95vh;
     border-radius: 20px;
     padding: 10px;
@@ -145,7 +145,7 @@
 
 /* upload style */
 .upload-tab {
-  background: #3b3c3d;
+  /* background: #3b3c3d; */
   padding: 20px;
   border-radius: 12px;
   color: #fff;
@@ -257,3 +257,7 @@ select {
   right: 120px;
 }
 
+.check-box{
+  z-index: 20;
+  cursor: pointer;
+}
