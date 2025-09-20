@@ -82,7 +82,7 @@
   width: 800px;
   left: 50%;
   right: 50%;
-  bottom: 80px;
+  /* bottom: 80px; */
   transform: translateX(-50%);
 }
 @media (max-width:600px){
@@ -94,6 +94,15 @@
   }
   .title{
     font-size: 15px !important;
+  }
+  .chat-window{
+    height: 50vh;
+  }
+  .app-grid{
+    height: 65vh;
+  }
+  .chat-input-container{
+    bottom: 10px;
   }
 }
 /* Text input */

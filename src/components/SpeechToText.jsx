@@ -58,6 +58,15 @@ const SpeechToText = ({ handleAsk, language, talking }) => {
     }
   };
 
+  // Example in a React component
+const handleButtonClick = () => {
+  if (recording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+};
+
   // Listen for T key press/release
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -84,12 +93,8 @@ const SpeechToText = ({ handleAsk, language, talking }) => {
   return (
     <div className="speak-btn-div">
     <button
-  onMouseDown={!talking ? startRecording : undefined}
-  onMouseUp={!talking ? stopRecording : undefined}
-  onTouchStart={!talking ? startRecording : undefined}
-  onTouchEnd={!talking ? stopRecording : undefined}
-  onMouseLeave={!talking ? stopRecording : undefined}
-  disabled={talking}   // 🔹 disable only while talking
+  onClick={handleButtonClick}
+  disabled={talking}
   className={`hold-to-speak-text ${recording ? "listening" : ""}`}
 >
   {talking
