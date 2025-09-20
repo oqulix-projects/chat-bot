@@ -97,7 +97,7 @@ const handleButtonClick = () => {
   disabled={talking}
   className={`hold-to-speak-text ${recording ? "listening" : ""}`}
 >
-<i className="fa-solid fa-microphone"></i>
+{recording?<i className="fa-solid fa-share"></i>:<i className="fa-solid fa-microphone"></i>}
 </button>
 
 
