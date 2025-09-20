@@ -13,8 +13,8 @@ export default defineConfig({
         'masked-icon.svg'
       ],
       manifest: {
-        name: 'My Vite React App',
-        short_name: 'ViteApp',
+        name: 'Oqulix Bot',
+        short_name: 'Oqulix Bot',
         description: 'My React + Vite app as a PWA',
         theme_color: '#ffffff',
         background_color: '#ffffff',
