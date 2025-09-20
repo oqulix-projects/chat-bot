@@ -119,7 +119,7 @@ const CharacterModel = ({ talking, background }) => {
     <>
       <div className="container">
         <div className="canvas-container">
-          <Canvas shadows camera={{ position: [0, 0.1, 6] }}>
+          <Canvas shadows camera={{ position: [0, 0.1, 8] }}>
             {background!=''&&<SkySphere/>}
 
 <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.4, 0]} receiveShadow>
