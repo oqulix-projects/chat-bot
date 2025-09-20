@@ -330,8 +330,10 @@ const Homepage = () => {
                 <input
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder={talking?"Speaking":"Type your question..."}
-                  className="chat-input"
+                  type="text"
+                  placeholder={
+    loading ? "Thinking..." : talking ? "Talking..." : "Type your question"
+  }                className="chat-input"
                   disabled={loading || talking} // 🔹 disable input while loading or talking
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !loading && !talking) handleAsk();
@@ -342,7 +344,7 @@ const Homepage = () => {
                   disabled={loading || talking} // 🔹 disable button too
                   className="ask-button"
                 >
-                  {loading || talking ? "Thinking..." : "Ask"}
+                  Ask
                 </button>
                 <SpeechToText
                   talking={talking}
