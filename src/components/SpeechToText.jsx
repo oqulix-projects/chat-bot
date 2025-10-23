@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Speech.css";
 
-const SpeechToText = ({ handleAsk, language, talking }) => {
+const SpeechToText = ({ handleAsk, language, talking, wave }) => {
+  
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -66,7 +67,9 @@ const handleButtonClick = () => {
     startRecording();
   }
 };
-
+useEffect(()=>{
+  wave&&handleButtonClick()
+},[wave])
   // Listen for T key press/release
   useEffect(() => {
     const handleKeyDown = (e) => {

@@ -9,6 +9,7 @@ import CharacterModel from "./CharacterModel";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { getAuth, signOut } from "firebase/auth";
+import WaveDetector from "./WaveDetector";
 
 // rafce style functional component
 const Homepage = () => {
@@ -19,6 +20,38 @@ const Homepage = () => {
   const [language, setlanguage] = useState("english");
   const [subtitle, setSubtitle] = useState("");
   const [background,setBackground]=useState('')
+  const [wave,setWave]=useState(false)
+  
+const greetings = {
+  english: [
+    "Hi! How can I assist you today?",
+    "Hello! What can I do for you?",
+    "Hey there! Need any help?",
+    "Hi! How may I help you?",
+    "Hello! What assistance do you need?"
+  ],
+  malayalam: [
+    "ഹായ്! ഞാൻ എങ്ങനെ സഹായിക്കാമെന്ന് പറയൂ?",
+    "നമസ്കാരം! എന്ത് സഹായം വേണം?",
+    "ഹേയ്! സഹായം വേണോ?",
+    "ഹായ്! എനിക്ക് നിങ്ങളെ സഹായിക്കാമോ?",
+    "നമസ്കാരം! എങ്ങനെ സഹായിക്കണം?"
+  ],
+  hindi: [
+    "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?",
+    "हैलो! आपको किस चीज़ में मदद चाहिए?",
+    "अरे! कोई मदद चाहिए?",
+    "नमस्ते! मैं आपकी सहायता कर सकता हूँ?",
+    "हैलो! मैं आपकी कैसे सहायता करूँ?"
+  ],
+  arabic: [
+    "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+    "أهلاً! ماذا يمكنني أن أفعل من أجلك؟",
+    "مرحباً! هل تحتاج إلى أي مساعدة؟",
+    "أهلاً! كيف يمكنني خدمتك؟",
+    "مرحباً! كيف يمكنني دعمك اليوم؟"
+  ]
+};
 
   const [talking, setTalking] = useState(false);
 
@@ -254,6 +287,82 @@ const Homepage = () => {
 
   // Example usage after chatbot response:
 
+
+  async function playTTSWave(text) {
+      console.log("GCP service playing TTS");
+
+      // store the cleaned text
+      const cleanedText = text;
+      console.log("Cleaned text:", cleanedText);
+
+      try {
+      
+        setWave(true)
+        let voiceName;
+        let languageCode;
+
+        switch (language.toLowerCase()) {
+          case "malayalam":
+            languageCode = "ml-IN";
+            voiceName = "ml-IN-Wavenet-A";
+            break;
+          case "hindi":
+            languageCode = "hi-IN";
+            voiceName = "hi-IN-Wavenet-A";
+            break;
+          case "arabic":
+            languageCode = "ar-XA";
+            voiceName = "ar-XA-Chirp3-HD-Achernar";
+            break;
+          case "english":
+          default:
+            languageCode = "en-US";
+            voiceName = "en-US-Wavenet-F";
+            break;
+        }
+
+        // const idToken = await auth.currentUser.getIdToken();
+
+        const resp = await fetch("http://localhost:4000/speak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: cleanedText, //send cleaned text
+            languageCode,
+            voiceName,
+          }),
+        });
+
+        if (!resp.ok) throw new Error("TTS request failed");
+
+        const buf = await resp.arrayBuffer();
+        const blob = new Blob([buf], { type: "audio/mpeg" });
+        const url = URL.createObjectURL(blob);
+
+        const audio = new Audio(url);
+
+        // Track start/end/error like in Web Speech API
+        audio.onplay = () => setWave(true);
+        audio.onended = () => setWave(false);
+        audio.onerror = () => setWave(false);
+
+        await audio.play();
+      } catch (err) {
+        console.error("Error in playTTS:", err);
+        setTalking(false);
+      }
+    }
+
+  const handleWave = async() => {
+    console.log("Wave detected!");
+    // Trigger your 3D model animation, ChatGPT, TTS, etc.
+    const waveReply = greetings[language]?.[Math.floor(Math.random() * greetings[language].length)] || greetings.english[0];
+    console.log(waveReply);
+    
+    await playTTSWave(waveReply)
+    setSubtitle(waveReply)
+  };
+
   const handleCheckboxChange = (e) => {
     if (e.target.checked) {
       setBackground("url('/bg1.avif')"); // assuming bg1.jpg is inside /public
@@ -264,6 +373,7 @@ const Homepage = () => {
 
   return (
     <div className="main-container">
+       
       <label className="check-box">
         <input
           type="checkbox"
@@ -272,6 +382,7 @@ const Homepage = () => {
         />
         Use Background
       </label> 
+      <WaveDetector onWaveDetected={handleWave} />
       <div className="app-container">
         <div className="app-grid">
           {/* Upload column */}
@@ -324,7 +435,7 @@ const Homepage = () => {
         </div> */}
 
             <div className="chat-window" style={background!=''?{backgroundImage:background,backgroundSize:'cover'}:{backgroundImage:''}}>
-              <CharacterModel talking={talking} background={background}/>
+              <CharacterModel wave={wave} onWaveDetected={handleWave} talking={talking} background={background}/>
             </div>
            <div className="chat-input-container">
                 <input
@@ -351,6 +462,7 @@ const Homepage = () => {
                   language={language}
                   setQuestion={setQuestion}
                   handleAsk={handleAsk}
+                  wave={wave}
                 />
               </div>
           </div>

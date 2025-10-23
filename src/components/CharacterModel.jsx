@@ -71,7 +71,8 @@ const Model = ({ currentAction }) => {
 };
 
 // Parent component that holds the Canvas and UI
-const CharacterModel = ({ talking, background }) => {
+const CharacterModel = ({ talking, background, wave }) => {
+  
   const idleStates = [
     "idle1","idle2","idle5","idle6",
     "idle7","idle8","idle9","idle10","idle11"
@@ -81,6 +82,7 @@ const CharacterModel = ({ talking, background }) => {
     "talk1","talk2","talk3","talk4","talk5","talk6"
   ];
 
+  const waveState=["idle5"]
   const [currentIndex, setCurrentIndex] = useState(0);
   const [repeatCount, setRepeatCount] = useState(0);
 
@@ -92,7 +94,7 @@ const CharacterModel = ({ talking, background }) => {
     setRepeatCount(0);
     setCurrentIndex(0);
 
-    const states = talking ? talkStates : idleStates;
+    const states = wave ? waveState: talking ? talkStates : idleStates;
 
     // pick a random starting action instantly
     const randomIndex = Math.floor(Math.random() * states.length);
@@ -114,7 +116,7 @@ const CharacterModel = ({ talking, background }) => {
     return () => clearInterval(interval);
   }, [talking]);
 
-  const action = talking ? talkStates[currentIndex] : idleStates[currentIndex];
+  const action = wave ? waveState[0]:talking ? talkStates[currentIndex] : idleStates[currentIndex];
   return (
     <>
       <div className="container">
