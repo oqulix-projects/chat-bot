@@ -158,7 +158,7 @@ const Homepage = () => {
 
         // const idToken = await auth.currentUser.getIdToken();
 
-        const resp = await fetch("https://oqulix-chat-server.onrender.com/speak", {
+        const resp = await fetch("http://localhost:4000/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -279,7 +279,7 @@ const Homepage = () => {
           {/* Chat column */}
           <div className="chat-column">
             <div className="section-title">
-              <img src="/myg.png" width={"40px"} alt="" />
+              {/* <img src="/myg.png" width={"40px"} alt="" /> */}
               <h1 className="title">Welcome! How can I assist you?</h1>
               <div className="upload-tab-main">
                 <div className="upload-tab">
