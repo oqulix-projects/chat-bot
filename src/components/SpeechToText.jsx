@@ -28,7 +28,7 @@ const SpeechToText = ({ handleAsk, language, talking, wave }) => {
         formData.append("language", language);
 
         try {
-          const response = await fetch("http://localhost:4000/stt", {
+          const response = await fetch("https://oqulix-chat-server.onrender.com/stt", {
             method: "POST",
             body: formData,
           });

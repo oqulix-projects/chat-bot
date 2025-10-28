@@ -120,7 +120,7 @@ export default function WaveDetector({ onWaveDetected }) {
         muted
         autoPlay
       />
-      <p style={{ color: "white" }}>Wave Detector Active: Look at the camera!</p>
+      <p style={{ color: "white" }}></p>
     </div>
   );
 }
