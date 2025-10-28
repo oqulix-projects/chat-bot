@@ -21,7 +21,7 @@ const Homepage = () => {
   const [subtitle, setSubtitle] = useState("");
   const [background,setBackground]=useState('')
   const [wave,setWave]=useState(false)
-  
+  const [cameraDetection, setCameraDetection]=useState(false)
 const greetings = {
   english: [
     "Hi! How can I assist you today?",
@@ -191,7 +191,7 @@ const greetings = {
 
         // const idToken = await auth.currentUser.getIdToken();
 
-        const resp = await fetch("http://localhost:4000/speak", {
+        const resp = await fetch("https://oqulix-chat-server.onrender.com/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -323,7 +323,7 @@ const greetings = {
 
         // const idToken = await auth.currentUser.getIdToken();
 
-        const resp = await fetch("http://localhost:4000/speak", {
+        const resp = await fetch("https://oqulix-chat-server.onrender.com/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -371,18 +371,49 @@ const greetings = {
     }
   };
 
+  const handleCameraCheckboxChange = (e) => {
+    if (e.target.checked) {
+      setCameraDetection(true); // assuming bg1.jpg is inside /public
+    } else {
+      setCameraDetection(false); // remove background if unchecked
+    }
+  };
+
   return (
     <div className="main-container">
        
-      <label className="check-box">
-        <input
-          type="checkbox"
-          
-          onChange={handleCheckboxChange}
-        />
-        Use Background
-      </label> 
-      <WaveDetector onWaveDetected={handleWave} />
+      <div className="control-panel">
+        <label className="check-box">
+          <input
+            type="checkbox"
+            
+            onChange={handleCheckboxChange}
+          />
+          Background
+        </label> 
+        <label className="check-box">
+          <input
+            type="checkbox"
+            
+            onChange={handleCameraCheckboxChange}
+          />
+          Camera
+        </label> 
+
+        <div>
+                      <select
+                        name=""
+                        id=""
+                        onChange={(e) => setlanguage(e.target.value)}
+                      >
+                        <option value="english">English</option>
+                        <option value="malayalam">Malayalam</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="arabic">Arabic</option>
+                      </select>
+                    </div>
+      </div>
+      
       <div className="app-container">
         <div className="app-grid">
           {/* Upload column */}
@@ -396,18 +427,7 @@ const greetings = {
                 <div className="upload-tab">
                   <div className="upload-column">
                     {error && <p className="error-text">{error}</p>}
-                    <div>
-                      <select
-                        name=""
-                        id=""
-                        onChange={(e) => setlanguage(e.target.value)}
-                      >
-                        <option value="english">English</option>
-                        <option value="malayalam">Malayalam</option>
-                        <option value="Hindi">Hindi</option>
-                        <option value="arabic">Arabic</option>
-                      </select>
-                    </div>
+                    
                   </div>
                 </div>
                 <button
@@ -415,7 +435,7 @@ const greetings = {
                   className="logout-button"
                   onClick={logoutUser}
                 >
-                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  <i className="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
               </div>
             </div>
@@ -469,7 +489,7 @@ const greetings = {
         </div>
       </div>
       {
-        <p
+        <div
           style={
             subtitle.length > 0
               ? { backgroundColor: "rgba(0,0,0,0.4)" }
@@ -478,8 +498,9 @@ const greetings = {
           className="subtitle"
         >
           <ReactMarkdown>{subtitle.length > 0 ? displaySubtitle : " "}</ReactMarkdown>
-        </p>
+        </div>
       }
+      <div className="camera">{cameraDetection&&<WaveDetector onWaveDetected={handleWave} />}</div>
     </div>
   );
 };

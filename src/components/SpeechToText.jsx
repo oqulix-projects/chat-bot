@@ -67,9 +67,9 @@ const handleButtonClick = () => {
     startRecording();
   }
 };
-useEffect(()=>{
-  wave&&handleButtonClick()
-},[wave])
+// useEffect(()=>{
+//   wave&&handleButtonClick()
+// },[wave])
   // Listen for T key press/release
   useEffect(() => {
     const handleKeyDown = (e) => {

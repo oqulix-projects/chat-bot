@@ -4,7 +4,7 @@
 
 import { auth } from "../../firebaseConfig";
 
-const API_BASE = "http://localhost:4000" //process.env.REACT_APP_API_URL ?? '';
+const API_BASE = "https://oqulix-chat-server.onrender.com" //process.env.REACT_APP_API_URL ?? '';
 
 export async function uploadFile(file) {
   const form = new FormData();

@@ -114,7 +114,8 @@ export default function WaveDetector({ onWaveDetected }) {
     <div>
       <video
         ref={videoRef}
-        style={{ display: "none" }} // hidden video
+        style={{width:'120px',height:'150px'}}
+        // style={{ display: "none" }} // hidden video
         playsInline
         muted
         autoPlay
