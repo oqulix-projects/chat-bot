@@ -26,8 +26,8 @@ export async function uploadFile(file) {
 
 
 
-export async function askQuestion(question, userId, language) {
-  const payload = { question, userId, language };
+export async function askQuestion(question, userId, language, previousAnswer) {
+  const payload = { question, userId, language, previousAnswer };
 
   const res = await fetch(`${API_BASE}/ask`, {
     method: 'POST',

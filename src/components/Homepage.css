@@ -37,6 +37,7 @@
     border-radius: 12px;
     max-height: 75vh;
     padding: 20px;
+    margin-top: 90px;
 }
 
 
@@ -283,35 +284,59 @@ select {
   position: fixed;
   top: 20px;
   left: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 12px 18px;
+  /* background: rgba(25, 25, 25, 0.9); */
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  /* box-shadow: 0 4px 20px rgba(0,0,0,0.3); */
   color: #fff;
   font-family: 'Inter', sans-serif;
   z-index: 1000;
-  backdrop-filter: blur(6px);
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  /* backdrop-filter: blur(8px); */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  padding: 3px;
+  justify-content: center;
+  align-items: center;
+}
 
+
+/* Hidden by default on mobile */
+@media (max-width: 768px) {
+  .control-panel {
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    background-color: #1e1e1e;
+    padding: 20px;
+    overflow-y: scroll;
+    height: 90vh;
+    padding-top: 120px;
+    padding-bottom: 30px;
+    margin: -20px;
+  }
+
+  .control-panel.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
 }
 
 .check-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   font-size: 14px;
 }
 
-/* Hide the default checkbox */
+/* Toggle-style checkbox */
 .check-box input[type="checkbox"] {
   appearance: none;
   width: 40px;
   height: 20px;
-  background: #444;
+  background: #555;
   border-radius: 20px;
   position: relative;
   outline: none;
@@ -319,7 +344,6 @@ select {
   transition: background 0.3s ease;
 }
 
-/* The toggle knob */
 .check-box input[type="checkbox"]::before {
   content: "";
   position: absolute;
@@ -332,11 +356,50 @@ select {
   transition: 0.3s;
 }
 
-/* When checked */
 .check-box input[type="checkbox"]:checked {
-  background: #4ade80; /* Tailwind green-400 */
+  background: #22c55e;
 }
 
 .check-box input[type="checkbox"]:checked::before {
   left: 22px;
+}
+
+select {
+  background: #222;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 6px 10px;
+  outline: none;
+}
+
+/* Floating settings button */
+.settings-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(30, 30, 30, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* On desktop, always show panel and hide settings button */
+@media (min-width: 769px) {
+  .settings-btn {
+    display: none;
+  }
+  .control-panel {
+    opacity: 1 !important;
+    pointer-events: all !important;
+    transform: none !important;
+  }
 }

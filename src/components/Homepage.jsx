@@ -1,5 +1,5 @@
 // File: src/components/Homepage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { uploadFile, askQuestion } from "../services/service";
 import "./Homepage.css";
 import SpeechToText from "./SpeechToText";
@@ -10,18 +10,9 @@ import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { getAuth, signOut } from "firebase/auth";
 import WaveDetector from "./WaveDetector";
+import FAQ from "./FAQ";
 
-// rafce style functional component
-const Homepage = () => {
-  const [question, setQuestion] = useState("");
-  const [chat, setChat] = useState([]); // { role: 'user' | 'assistant', text }
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [language, setlanguage] = useState("english");
-  const [subtitle, setSubtitle] = useState("");
-  const [background,setBackground]=useState('')
-  const [wave,setWave]=useState(false)
-  const [cameraDetection, setCameraDetection]=useState(false)
+// 🌟 OPTIMIZATION 1: Move constants OUTSIDE the component to ensure stability (never re-created)
 const greetings = {
   english: [
     "Hi! How can I assist you today?",
@@ -53,11 +44,24 @@ const greetings = {
   ]
 };
 
+// Utility function for pausing execution
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const Homepage = () => {
+  const [question, setQuestion] = useState("");
+  const [chat, setChat] = useState([]); // { role: 'user' | 'assistant', text }
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [language, setlanguage] = useState("english");
+  const [subtitle, setSubtitle] = useState("");
+  const [background,setBackground]=useState('')
+  const [wave,setWave]=useState(false)
+  const [cameraDetection, setCameraDetection]=useState(false) // Toggles WaveDetector
   const [talking, setTalking] = useState(false);
-
   const [token, setToken] = useState("");
-
   const [displaySubtitle, setDisplaySubtitle] = useState("");
+
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     if (!subtitle) {
@@ -74,14 +78,13 @@ const greetings = {
       if (index >= subtitle.length) {
         clearInterval(interval);
       }
-    }, 20); // safer speed (2ms is too fast for React updates)
+    }, 20); 
 
     return () => clearInterval(interval);
   }, [subtitle]);
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log("Logged in UID:", user.uid);
       setToken(user.uid);
     } else {
       console.log("User is signed out");
@@ -94,34 +97,6 @@ const greetings = {
       setSubtitle(chat[chat.length - 1].text);
   }, [chat]);
 
-  // const handleUpload = async () => {
-  //   if (!selectedFile) {
-  //     setError('Please choose a file to upload');
-  //     return;
-  //   }
-  //   setError(null);
-  //   setUploading(true);
-  //   try {
-  //     const data = await uploadFile(selectedFile);
-  //     // expected response: { message: 'File uploaded successfully', file: '<filename>' }
-  //     if (data?.file) {
-  //       setUploadedFiles((p) => {
-  //         // avoid duplicates
-  //         if (p.includes(data.file)) return p;
-  //         return [...p, data.file];
-  //       });
-  //       setSelectedDocument(data.file);
-  //     } else {
-  //       setError('Upload succeeded but server returned no filename');
-  //     }
-  //   } catch (err) {
-  //     setError(err.message || 'Upload failed');
-  //   } finally {
-  //     setUploading(false);
-  //     setSelectedFile(null);
-  //     // clear native file input if desired by setting key on input (not included here)
-  //   }
-  // };
 
   const handleAsk = async (questionToAsk) => {
     console.log("asking");
@@ -146,11 +121,11 @@ const greetings = {
           // remove links but keep text
           .replace(/\[(.*?)\]\(.*?\)/g, "$1")
           // remove emojis (all unicode emoji ranges)
-          .replace(/[\u{1F600}-\u{1F64F}]/gu, "") // emoticons
-          .replace(/[\u{1F300}-\u{1F5FF}]/gu, "") // symbols & pictographs
-          .replace(/[\u{1F680}-\u{1F6FF}]/gu, "") // transport & map
-          .replace(/[\u{2600}-\u{26FF}]/gu, "") // misc symbols
-          .replace(/[\u{2700}-\u{27BF}]/gu, "") // dingbats
+          .replace(/[\u{1F600}-\u{1F64F}]/gu, "") 
+          .replace(/[\u{1F300}-\u{1F5FF}]/gu, "") 
+          .replace(/[\u{1F680}-\u{1F6FF}]/gu, "") 
+          .replace(/[\u{2600}-\u{26FF}]/gu, "") 
+          .replace(/[\u{2700}-\u{27BF}]/gu, "") 
           // trim extra spaces
           .replace(/\s{2,}/g, " ")
           .trim()
@@ -211,7 +186,8 @@ const greetings = {
 
         // Track start/end/error like in Web Speech API
         audio.onplay = () => setTalking(true);
-        audio.onended = () => setTalking(false);
+        audio.onended = () => {setTalking(false)
+           setIsListening(true)};
         audio.onerror = () => setTalking(false);
 
         await audio.play();
@@ -221,12 +197,12 @@ const greetings = {
       }
     }
     // add user message to chat
-    setChat((p) => [...p, { role: "user", text: question }]);
+    setChat((p) => [...p, { role: "user", text: questionToAsk }]);
     setLoading(true);
     try {
       console.log(language);
 
-      const resp = await askQuestion(questionToAsk, token, language);
+      const resp = await askQuestion(questionToAsk, token, language, subtitle);
       // expected: { question, answer, userId }
 
       const answer = resp?.answer ?? "No answer from server";
@@ -251,45 +227,9 @@ const greetings = {
       });
   }
 
-  //   const handleKeyDown = (e) => {
-  //     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return; // ⛔ ignore typing
-
-  //     if (e.key.toLowerCase() === "t") {
-  //       if (window.recognition && !window.isRecognizing) {
-  //         window.isRecognizing = true;
-  //         window.recognition.start();
-  //       }
-  //     }
-  //   };
-
-  //   const handleKeyUp = (e) => {
-  //     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return; // ⛔ ignore typing
-
-  //     if (e.key.toLowerCase() === "t") {
-  //       if (window.recognition && window.isRecognizing) {
-  //         window.isRecognizing = false;
-  //         window.recognition.stop();
-  //       }
-  //       if (question.trim()) {
-  //         handleAsk();
-  //       }
-  //     }
-  //   };
-
-  //   window.addEventListener("keydown", handleKeyDown);
-  //   window.addEventListener("keyup", handleKeyUp);
-
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //     window.removeEventListener("keyup", handleKeyUp);
-  //   };
-  // }, [question, selectedDocument]);
-
-  // Example usage after chatbot response:
-
 
   async function playTTSWave(text) {
-      console.log("GCP service playing TTS");
+      console.log("GCP service playing TTS for wave");
 
       // store the cleaned text
       const cleanedText = text;
@@ -348,20 +288,27 @@ const greetings = {
 
         await audio.play();
       } catch (err) {
-        console.error("Error in playTTS:", err);
-        setTalking(false);
+        console.error("Error in playTTSWave:", err);
+        setWave(false);
       }
     }
 
-  const handleWave = async() => {
-    console.log("Wave detected!");
-    // Trigger your 3D model animation, ChatGPT, TTS, etc.
+  // 🌟 OPTIMIZATION 2: useCallback is now stable because 'greetings' is stable
+  const handleWave = useCallback(async() => {
+    
+    {// Trigger your 3D model animation, ChatGPT, TTS, etc.
     const waveReply = greetings[language]?.[Math.floor(Math.random() * greetings[language].length)] || greetings.english[0];
     console.log(waveReply);
     
-    await playTTSWave(waveReply)
-    setSubtitle(waveReply)
-  };
+    // 1. Await TTS completion
+    await playTTSWave(waveReply);
+    setSubtitle(waveReply);
+    // 2. Pause execution for 3 seconds (3000 milliseconds)
+    await delay(3000); 
+    
+    
+    setIsListening(true);}
+  }, [language]); // Only dependency needed now is 'language'
 
   const handleCheckboxChange = (e) => {
     if (e.target.checked) {
@@ -373,46 +320,55 @@ const greetings = {
 
   const handleCameraCheckboxChange = (e) => {
     if (e.target.checked) {
-      setCameraDetection(true); // assuming bg1.jpg is inside /public
+      setCameraDetection(true); 
     } else {
-      setCameraDetection(false); // remove background if unchecked
+      setCameraDetection(false); 
     }
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="main-container">
-       
-      <div className="control-panel">
+        
+      {/* Settings button (visible on mobile, floating at top-left) */}
+      <button
+        className="settings-btn"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        settings
+      </button>
+
+      {/* Control panel */}
+      {/* <div className={`control-panel ${isOpen ? "open" : ""}`}>
         <label className="check-box">
-          <input
-            type="checkbox"
-            
-            onChange={handleCheckboxChange}
-          />
+          <input type="checkbox" onChange={handleCheckboxChange} />
           Background
-        </label> 
+        </label>
+
         <label className="check-box">
-          <input
-            type="checkbox"
-            
-            onChange={handleCameraCheckboxChange}
-          />
+          <input type="checkbox" onChange={handleCameraCheckboxChange} />
           Camera
-        </label> 
+        </label>
 
         <div>
-                      <select
-                        name=""
-                        id=""
-                        onChange={(e) => setlanguage(e.target.value)}
-                      >
-                        <option value="english">English</option>
-                        <option value="malayalam">Malayalam</option>
-                        <option value="Hindi">Hindi</option>
-                        <option value="arabic">Arabic</option>
-                      </select>
-                    </div>
-      </div>
+          <select onChange={(e) => setlanguage(e.target.value)}>
+            <option value="english">English</option>
+            <option value="malayalam">Malayalam</option>
+            <option value="hindi">Hindi</option>
+            <option value="arabic">Arabic</option>
+          </select>
+        </div>
+        <SpeechToText
+                  talking={talking}
+                  language={language}
+                  setQuestion={setQuestion}
+                  handleAsk={handleAsk}
+                  isListening={isListening} 
+    setIsListening={setIsListening}
+                />
+                <FAQ handleAsk={handleAsk}/>
+      </div> */}
       
       <div className="app-container">
         <div className="app-grid">
@@ -440,34 +396,23 @@ const greetings = {
               </div>
             </div>
 
-            {/* <div className="document-selector">
-          <label className="selector-label">Selected document:</label>
-          <select
-            className="selector-dropdown"
-            value={selectedDocument}
-            onChange={(e) => setSelectedDocument(e.target.value)}
-          >
-            <option value="">-- choose a document --</option>
-            {uploadedFiles.map((f) => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select>
-        </div> */}
+            {/* <div className="document-selector"> ... </div> */}
 
             <div className="chat-window" style={background!=''?{backgroundImage:background,backgroundSize:'cover'}:{backgroundImage:''}}>
+              {/* handleWave is now stable */}
               <CharacterModel wave={wave} onWaveDetected={handleWave} talking={talking} background={background}/>
             </div>
-           <div className="chat-input-container">
+            <div className="chat-input-container">
                 <input
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   type="text"
                   placeholder={
     loading ? "Thinking..." : talking ? "Talking..." : "Type your question"
-  }                className="chat-input"
+  }        className="chat-input"
                   disabled={loading || talking} // 🔹 disable input while loading or talking
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !loading && !talking) handleAsk();
+                    if (e.key === "Enter" && !loading && !talking) handleAsk(question);
                   }}
                 />
                 <button
@@ -477,13 +422,7 @@ const greetings = {
                 >
                   Ask
                 </button>
-                <SpeechToText
-                  talking={talking}
-                  language={language}
-                  setQuestion={setQuestion}
-                  handleAsk={handleAsk}
-                  wave={wave}
-                />
+                
               </div>
           </div>
         </div>
@@ -497,10 +436,11 @@ const greetings = {
           }
           className="subtitle"
         >
-          <ReactMarkdown>{subtitle.length > 0 ? displaySubtitle : " "}</ReactMarkdown>
+          { <ReactMarkdown>{subtitle.length > 0 ? displaySubtitle : " "}</ReactMarkdown> }
         </div>
       }
-      <div className="camera">{cameraDetection&&<WaveDetector onWaveDetected={handleWave} />}</div>
+      {/* WaveDetector is conditionally rendered based on state */}
+      <div className="camera">{cameraDetection&&<WaveDetector talking={talking} isListening={isListening} onWaveDetected={handleWave} />}</div>
     </div>
   );
 };

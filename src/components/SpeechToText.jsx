@@ -1,112 +1,230 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./Speech.css";
 
-const SpeechToText = ({ handleAsk, language, talking, wave }) => {
-  
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+// --- CONSTANTS ---
+// VAD Threshold: Max volume (0-255) considered 'silence' for stopping.
+const SILENCE_THRESHOLD = 150; 
+// VAD Duration: Time (ms) of continuous 'silence' (below threshold) before stopping.
+const SILENCE_DURATION_MS = 3000; 
+// Logging frequency (for debugging)
+const LOGGING_INTERVAL_MS = 250; 
+// --- END CONSTANTS ---
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
+// ⚠️ Component Signature Updated
+const SpeechToText = ({ 
+    handleAsk, 
+    language, 
+    talking, 
+    isListening, // Used to auto-start recording
+    setIsListening // Used to signal stop back to parent
+}) => {
+    
+    // --- STATE & REFS ---
+    const [recording, setRecording] = useState(false);
+    
+    // MediaRecorder Refs
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    
+    // Web Audio API Refs for VAD and Cleanup
+    const audioContextRef = useRef(null);
+    const analyserRef = useRef(null);
+    const volumeLoggerRef = useRef(null); 
+    const trackRef = useRef(null); // To store the audio track
+    const silenceStartTimeRef = useRef(null); // Tracks when continuous silence began
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+    // --- UTILITY FUNCTION ---
+    const stopRecording = useCallback(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+            console.log("Stop Recording called.");
+            mediaRecorderRef.current.stop();
         }
-      };
+    }, []);
 
-      mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        audioChunksRef.current = []; // reset buffer
+    // --- MAIN LOGIC ---
 
-        // Prepare audio for upload
-        const formData = new FormData();
-        formData.append("audio", audioBlob, "speech.webm");
-        formData.append("language", language);
-
+    const startRecording = async () => {
         try {
-          const response = await fetch("https://oqulix-chat-server.onrender.com/stt", {
-            method: "POST",
-            body: formData,
-          });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioTrack = stream.getAudioTracks()[0];
+            trackRef.current = audioTrack; 
 
-          const data = await response.json();
-          if (data.text) {
-            console.log("STT result:", data.text);
-            handleAsk(data.text); // directly ask question
-          } else {
-            console.error("No transcript received", data);
-          }
+            // ==========================================================
+            // 💥 VAD Setup (Replaces the Hard Timeout)
+            // ==========================================================
+            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContextRef.current.createMediaStreamSource(stream);
+            analyserRef.current = audioContextRef.current.createAnalyser();
+            analyserRef.current.fftSize = 2048; 
+            source.connect(analyserRef.current);
+
+            const bufferLength = analyserRef.current.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            silenceStartTimeRef.current = performance.now(); // Start silence timer immediately
+
+            const checkVolumeAndStop = () => {
+                if (!analyserRef.current || mediaRecorderRef.current?.state !== "recording") return;
+                
+                analyserRef.current.getByteFrequencyData(dataArray);
+
+                let maxVolume = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    if (dataArray[i] > maxVolume) {
+                        maxVolume = dataArray[i];
+                    }
+                }
+                
+                // 🔊 Debug Logging: See the volume live!
+                console.log(`🔊 LIVE MAX VOLUME: ${maxVolume}`);
+                
+                // --- VAD Logic ---
+                if (maxVolume < SILENCE_THRESHOLD) {
+                    // Current frame is 'silent'. Check if duration exceeded the limit.
+                    if (performance.now() - silenceStartTimeRef.current > SILENCE_DURATION_MS) {
+                        console.log(`Silence detected (Max Vol: ${maxVolume}) for ${SILENCE_DURATION_MS/1000}s. Stopping recording.`);
+                        stopRecording(); // 💥 Auto-stop based on silence
+                        return; // Stop the function instance
+                    }
+                } else {
+                    // Loud volume detected (above 150), reset silence timer
+                    silenceStartTimeRef.current = performance.now();
+                }
+                
+                // Set up the next check
+                volumeLoggerRef.current = setTimeout(checkVolumeAndStop, LOGGING_INTERVAL_MS);
+            };
+            
+            volumeLoggerRef.current = setTimeout(checkVolumeAndStop, LOGGING_INTERVAL_MS);
+            // ==========================================================
+
+
+            mediaRecorderRef.current = new MediaRecorder(stream, {
+                mimeType: "audio/webm",
+            });
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorderRef.current.onstop = async () => {
+                // 1. Stop all listeners/timers/loops first
+                if (volumeLoggerRef.current) {
+                    clearTimeout(volumeLoggerRef.current);
+                    volumeLoggerRef.current = null;
+                }
+                
+                // 2. Cleanup Resources
+                audioContextRef.current?.close(); 
+                if (trackRef.current) trackRef.current.stop(); 
+
+                // 3. Reset states (setRecording and setIsListening already handled)
+                setRecording(false);
+                setIsListening(false); 
+
+                // 4. Only process audio if we captured data
+                if (audioChunksRef.current.length === 0) {
+                    console.log("Recording stopped with no audio captured.");
+                    return;
+                }
+
+                // --- STT Processing Logic ---
+                const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+                audioChunksRef.current = []; 
+
+                const formData = new FormData();
+                formData.append("audio", audioBlob, "speech.webm");
+                formData.append("language", language);
+
+                try {
+                    const response = await fetch("https://oqulix-chat-server.onrender.com/stt", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+                    if (data.text) {
+                        console.log("STT result:", data.text);
+                        handleAsk(data.text); 
+                    } else {
+                        console.error("No transcript received", data);
+                    }
+                } catch (err) {
+                    console.error("Error sending audio:", err);
+                }
+                // --- End STT Processing Logic ---
+            };
+
+            mediaRecorderRef.current.start();
+            setRecording(true);
+            
         } catch (err) {
-          console.error("Error sending audio:", err);
+            console.error("Microphone access denied:", err);
+            setIsListening(false);
         }
-      };
-
-      mediaRecorderRef.current.start();
-      setRecording(true);
-    } catch (err) {
-      console.error("Microphone access denied:", err);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
-    }
-  };
-
-  // Example in a React component
-const handleButtonClick = () => {
-  if (recording) {
-    stopRecording();
-  } else {
-    startRecording();
-  }
-};
-// useEffect(()=>{
-//   wave&&handleButtonClick()
-// },[wave])
-  // Listen for T key press/release
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key.toLowerCase() === "t" && !recording) {
-        startRecording();
-      }
     };
 
-    const handleKeyUp = (e) => {
-      if (e.key.toLowerCase() === "t" && recording) {
-        stopRecording();
-      }
+
+    // 1. 💥 Auto-Start Logic (Triggered by isListening from parent)
+    useEffect(() => {
+        if (isListening && !recording) {
+            console.log("Auto-start recording due to wave/greet sequence.");
+            startRecording();
+        }
+    }, [isListening]); 
+
+
+    // 2. Existing Button/Key Logic (Modified for compatibility)
+    const handleButtonClick = () => {
+        if (recording) {
+            stopRecording();
+        } else {
+            if (!isListening) {
+                startRecording();
+            }
+        }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    // Listen for T key press/release
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key.toLowerCase() === "t" && !recording && !isListening) {
+                startRecording();
+            }
+        };
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [recording]);
+        const handleKeyUp = (e) => {
+            if (e.key.toLowerCase() === "t" && recording) {
+                stopRecording();
+            }
+        };
 
-  return (
-    <div className="speak-btn-div">
-    <button
-  onClick={handleButtonClick}
-  disabled={talking}
-  className={`hold-to-speak-text ${recording ? "listening" : ""}`}
->
-{recording?<i className="fa-solid fa-share"></i>:<i className="fa-solid fa-microphone"></i>}
-</button>
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
 
+        // stopRecording must be in the dependency array since it's used inside the effect
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, [recording, isListening, stopRecording]); 
 
-
-    </div>
-  );
+    return (
+        <div className="speak-btn-div">
+            <button
+                onClick={handleButtonClick}
+                disabled={talking || isListening} 
+                className={`hold-to-speak-text ${recording ? "listening" : ""}`}
+            >
+            {recording 
+                ? <i className="fa-solid fa-share" style={{display:'flex',flexDirection:'column',alignItems:'center'}}><span style={{fontSize:'20px'}}>Listening...</span></i> 
+                : <i className="fa-solid fa-microphone"></i>
+            }
+            </button>
+        </div>
+    );
 };
 
 export default SpeechToText;
