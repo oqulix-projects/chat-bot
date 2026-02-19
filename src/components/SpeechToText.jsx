@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import "./Speech.css";
 
 // --- CONSTANTS ---
 // VAD Threshold: Max volume (0-255) considered 'silence' for stopping.
 const SILENCE_THRESHOLD = 150; 
 // VAD Duration: Time (ms) of continuous 'silence' (below threshold) before stopping.
-const SILENCE_DURATION_MS = 3000; 
+const SILENCE_DURATION_MS = 2000; 
 // Logging frequency (for debugging)
 const LOGGING_INTERVAL_MS = 250; 
 // --- END CONSTANTS ---
@@ -212,18 +211,41 @@ const SpeechToText = ({
     }, [recording, isListening, stopRecording]); 
 
     return (
-        <div className="speak-btn-div">
-            <button
-                onClick={handleButtonClick}
-                disabled={talking || isListening} 
-                className={`hold-to-speak-text ${recording ? "listening" : ""}`}
-            >
-            {recording 
-                ? <i className="fa-solid fa-share" style={{display:'flex',flexDirection:'column',alignItems:'center'}}><span style={{fontSize:'20px'}}>Listening...</span></i> 
-                : <i className="fa-solid fa-microphone"></i>
-            }
-            </button>
-        </div>
+        <div className="flex justify-center items-center">
+
+  <button
+    onClick={handleButtonClick}
+    disabled={talking || isListening}
+    className={`
+      relative w-20 h-20 rounded-full
+      flex flex-col items-center justify-center
+      text-white font-semibold
+      transition-all duration-200
+      active:scale-95
+      shadow-xl
+      ${recording
+        ? "bg-gradient-to-br from-orange-500 to-pink-600 animate-pulse"
+        : "bg-gradient-to-br from-blue-600 to-cyan-400 hover:scale-105"}
+      ${(talking || isListening) ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+    `}
+  >
+
+    {recording ? (
+      <>
+        <i className="fa-solid fa-share text-3xl mb-2"></i>
+        <span className="text-lg tracking-wide">Listening...</span>
+
+        {/* Ripple Effect */}
+        <span className="absolute inset-0 rounded-full border-4 border-orange-400 animate-ping opacity-40"></span>
+      </>
+    ) : (
+      <i className="fa-solid fa-microphone text-4xl"></i>
+    )}
+
+  </button>
+
+</div>
+
     );
 };
 

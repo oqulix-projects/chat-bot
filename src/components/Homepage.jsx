@@ -1,10 +1,10 @@
 // File: src/components/Homepage.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { uploadFile, askQuestion } from "../services/service";
-import "./Homepage.css";
+// import "./Homepage.css";
 import SpeechToText from "./SpeechToText";
 import ReactMarkdown from "react-markdown";
-import "./style.css";
+// import "./style.css";
 import CharacterModel from "./CharacterModel";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -312,7 +312,7 @@ const Homepage = () => {
 
   const handleCheckboxChange = (e) => {
     if (e.target.checked) {
-      setBackground("url('/bg1.avif')"); // assuming bg1.jpg is inside /public
+      setBackground("url('/bg2.png')"); // assuming bg1.jpg is inside /public
     } else {
       setBackground(""); // remove background if unchecked
     }
@@ -329,120 +329,175 @@ const Homepage = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="main-container">
-        
-      {/* Settings button (visible on mobile, floating at top-left) */}
+  <div className="h-screen w-screen  text-white flex flex-col overflow-hidden">
+    
+
+    {/* ================= HEADER ================= */}
+    <div className="bg-orange-500 px-8 py-5 flex items-center justify-between shadow-lg">
+
+      <div className="flex items-center gap-4">
+        <img src="/myg.png" style={{width:'70px',height:'70px'}} alt="MYG Logo" className="h-12" />
+        <h1 className="text-3xl font-bold tracking-wide">
+          MYG Assistant
+        </h1>
+      </div>
+
       <button
-        className="settings-btn"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={logoutUser}
+        className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition"
       >
-        settings
+        Logout
       </button>
+    </div>
 
-      {/* Control panel */}
-      {/* <div className={`control-panel ${isOpen ? "open" : ""}`}>
-        <label className="check-box">
-          <input type="checkbox" onChange={handleCheckboxChange} />
-          Background
-        </label>
+<div className=" p-6 flex gap-10 z-30" style={{width:'95%'}}>
 
-        <label className="check-box">
-          <input type="checkbox" onChange={handleCameraCheckboxChange} />
-          Camera
-        </label>
+  {/* LEFT SIDE — SETTINGS */}
+  <div className="flex flex-col gap-6 min-w-[200px]">
 
-        <div>
-          <select onChange={(e) => setlanguage(e.target.value)}>
-            <option value="english">English</option>
-            <option value="malayalam">Malayalam</option>
-            <option value="hindi">Hindi</option>
-            <option value="arabic">Arabic</option>
-          </select>
-        </div>
-        <SpeechToText
-                  talking={talking}
-                  language={language}
-                  setQuestion={setQuestion}
-                  handleAsk={handleAsk}
-                  isListening={isListening} 
-    setIsListening={setIsListening}
-                />
-                <FAQ handleAsk={handleAsk}/>
-      </div> */}
-      
-      <div className="app-container">
-        <div className="app-grid">
-          {/* Upload column */}
+    <label className="flex items-center justify-between gap-3 text-lg">
+      <span>Background</span>
+      <input
+        type="checkbox"
+        onChange={handleCheckboxChange}
+        className="w-5 h-5 accent-orange-500"
+      />
+    </label>
 
-          {/* Chat column */}
-          <div className="chat-column">
-            <div className="section-title">
-              {/* <img src="/myg.png" width={"40px"} alt="" /> */}
-              <h1 className="title">Welcome! How can I assist you?</h1>
-              <div className="upload-tab-main">
-                <div className="upload-tab">
-                  <div className="upload-column">
-                    {error && <p className="error-text">{error}</p>}
-                    
-                  </div>
-                </div>
-                <button
-                  title="Logout"
-                  className="logout-button"
-                  onClick={logoutUser}
-                >
-                  <i className="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-              </div>
-            </div>
+    <label className="flex items-center justify-between gap-3 text-lg">
+      <span>Camera</span>
+      <input
+        type="checkbox"
+        onChange={handleCameraCheckboxChange}
+        className="w-5 h-5 accent-orange-500"
+      />
+    </label>
 
-            {/* <div className="document-selector"> ... </div> */}
+    <select
+      onChange={(e) => setlanguage(e.target.value)}
+      className="bg-gray-700 text-white px-4 py-3 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+    >
+      <option value="english">English</option>
+      <option value="malayalam">Malayalam</option>
+      <option value="hindi">Hindi</option>
+      <option value="arabic">Arabic</option>
+    </select>
 
-            <div className="chat-window" style={background!=''?{backgroundImage:background,backgroundSize:'cover'}:{backgroundImage:''}}>
-              {/* handleWave is now stable */}
-              <CharacterModel wave={wave} onWaveDetected={handleWave} talking={talking} background={background}/>
-            </div>
-            <div className="chat-input-container">
-                <input
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  type="text"
-                  placeholder={
-    loading ? "Thinking..." : talking ? "Talking..." : "Type your question"
-  }        className="chat-input"
-                  disabled={loading || talking} // 🔹 disable input while loading or talking
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !loading && !talking) handleAsk(question);
-                  }}
-                />
-                <button
-                  onClick={() => handleAsk(question)}
-                  disabled={loading || talking} // 🔹 disable button too
-                  className="ask-button"
-                >
-                  Ask
-                </button>
-                
-              </div>
-          </div>
+  </div>
+
+  {/* RIGHT SIDE — FAQ */}
+  <div className="overflow-y-auto" >
+    <FAQ handleAsk={handleAsk} />
+  </div>
+
+</div>
+
+    {/* ================= CHARACTER SECTION ================= */}
+    <div
+  className="flex-1 flex items-center justify-center relative h-30"
+  // style={
+  //   background
+  //     ? {
+  //         backgroundImage: background,
+  //         backgroundSize: "cover",
+  //         backgroundPosition: "center",
+  //       }
+  //     : {}
+  // }
+  style={{position:'fixed',top:'45%',width:'100%'}}
+>
+  {/* Subtle radial dark glow behind character */}
+  <div className="absolute w-[600px] h-[600px] rounded-full bg-black/40 blur-3xl"></div>
+
+  <CharacterModel
+    wave={wave}
+    onWaveDetected={handleWave}
+    talking={talking}
+    background={background}
+  />
+</div>
+
+
+
+    {/* ================= INPUT SECTION ================= */}
+    <div className="bg-gray-850 px-10 py-6 flex flex-col gap-4 z-50" style={{position:'fixed',bottom:'50px',width:'100%'}}>
+
+      {/* Input Row */}
+      <div className="flex items-center gap-6">
+
+        {/* Text Input */}
+        <input
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          type="text"
+          placeholder={
+            loading
+              ? "Thinking..."
+              : talking
+              ? "Talking..."
+              : "Type your question"
+          }
+          disabled={loading || talking}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !loading && !talking)
+              handleAsk(question);
+          }}
+          className="flex-1 px-6 py-5 text-xl rounded-2xl bg-gray-700 focus:outline-none focus:ring-4 focus:ring-orange-500"
+        />
+
+        {/* Ask Button */}
+        <button
+          onClick={() => handleAsk(question)}
+          disabled={loading || talking}
+          className="px-8 py-5 text-xl bg-orange-500 rounded-2xl font-semibold hover:bg-orange-600 transition disabled:bg-gray-600"
+        >
+          Ask
+        </button>
+
+        {/* BIG Mic Button */}
+        <div className=" p-6 rounded-full shadow-xl hover:scale-105 transition">
+          <SpeechToText
+            talking={talking}
+            language={language}
+            setQuestion={setQuestion}
+            handleAsk={handleAsk}
+            isListening={isListening}
+            setIsListening={setIsListening}
+          />
         </div>
       </div>
-      {
-        <div
-          style={
-            subtitle.length > 0
-              ? { backgroundColor: "rgba(0,0,0,0.4)" }
-              : { backgroundColor: "none" }
-          }
-          className="subtitle"
-        >
-          { <ReactMarkdown>{subtitle.length > 0 ? displaySubtitle : " "}</ReactMarkdown> }
-        </div>
-      }
-      {/* WaveDetector is conditionally rendered based on state */}
-      <div className="camera">{cameraDetection&&<WaveDetector talking={talking} isListening={isListening} onWaveDetected={handleWave} />}</div>
+
+      {/* ================= SUBTITLES ================= */}
+      <div className="min-h-[70px] text-lg bg-black/40 p-4 rounded-xl">
+        <ReactMarkdown>
+          {subtitle.length > 0 ? displaySubtitle : " "}
+        </ReactMarkdown>
+      </div>
+
+      {error && (
+        <p className="text-red-400 text-lg">{error}</p>
+      )}
     </div>
-  );
-};
+
+
+    {/* ================= CONTROL PANEL (LEFT FLOATING) ================= */}
+    
+
+
+
+    {/* ================= CAMERA ================= */}
+    {cameraDetection && (
+      <div className="absolute bottom-6 left-6">
+        <WaveDetector
+          talking={talking}
+          isListening={isListening}
+          onWaveDetected={handleWave}
+        />
+      </div>
+    )}
+
+  </div>
+);
+}
 
 export default Homepage;

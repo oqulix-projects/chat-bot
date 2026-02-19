@@ -2,7 +2,6 @@ import React, { useRef, useEffect, Suspense, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import './CharacterModel.css';
 import SkySphere from './SkySphere';
 
 const MODEL_PATH = '/robot.glb';
@@ -105,30 +104,49 @@ const CharacterModel = ({ talking, background, wave }) => {
 
   const action = wave ? waveState[0] : talking ? talkStates[currentIndex] : idleStates[currentIndex];
 
-  return (
-    <div className="container">
-      <div className="canvas-container">
-        <Canvas shadows camera={{ position: [0, 0.1, 8] }} gl={{ preserveDrawingBuffer: true }}>
-          {background && <SkySphere />}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.4, 0]} receiveShadow>
-            <planeGeometry args={[20, 20]} />
-            <shadowMaterial opacity={0.4} />
-          </mesh>
-          <ambientLight intensity={0.5} />
-          <directionalLight
-            position={[10, 10, 5]}
-            intensity={1}
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-          />
-          <Suspense fallback={<Html center><span className="loading-text">Loading...</span></Html>}>
-            <Model currentAction={action} />
-          </Suspense>
-          <OrbitControls enableRotate={false} enablePan={false} />
-        </Canvas>
-      </div>
+  
+    return (
+  <div className="w-full flex justify-center">
+    <div className="w-full max-w-[900px] h-[80vh]">
+
+      <Canvas
+        shadows
+        camera={{ position: [0, 0.9, 8] }}
+        gl={{ preserveDrawingBuffer: true }}
+      >
+        {/* {background && <SkySphere />} */}
+
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.4, 0]} receiveShadow>
+          <planeGeometry args={[20, 20]} />
+          <shadowMaterial opacity={0.4} />
+        </mesh>
+
+        <ambientLight intensity={0.5} />
+
+        <directionalLight
+          position={[10, 10, 5]}
+          intensity={1}
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+        />
+
+        <Suspense
+          fallback={
+            <Html center>
+              <span className="text-white text-lg">Loading...</span>
+            </Html>
+          }
+        >
+          <Model currentAction={action} />
+        </Suspense>
+
+        <OrbitControls enableRotate={false} enablePan={false} />
+      </Canvas>
+
     </div>
+  </div>
+
   );
 };
 
