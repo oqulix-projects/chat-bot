@@ -16,3 +16,71 @@ body{
       background-size: cover;
 
 }
+.show-case{
+  animation: showcaseopen 3s;
+}
+
+@keyframes showcaseopen{
+  0%{
+    transform: scale(0);
+  }
+  60%{
+    transform: scale(0);
+  }
+  100%{
+    transform: scale(1);
+  }
+}
+
+
+/* Hide scrollbar but keep scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+@keyframes pulseScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+/* Opening animation */
+@keyframes calloutIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Closing animation */
+@keyframes calloutOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7) translateY(20px);
+  }
+}
+
+/* Utility classes */
+.animate-calloutIn {
+  animation: calloutIn 0.5s ease-out forwards;
+}
+
+.animate-calloutOut {
+  animation: calloutOut 0.25s ease-in forwards;
+}

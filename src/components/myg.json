@@ -1,0 +1,440 @@
+{
+  "metadata": {
+    "kb_name": "My G - Showroom Knowledge Base",
+    "version": "2025-09-16",
+    "tts_name": "My G",
+    "created_for": "myG showroom chatbot (ground-floor starting position)",
+    "notes": "Company profile includes web-sourced facts. Product specs are representative—used for assistant responses and troubleshooting guidance."
+  },
+  "company_info": {
+    "display_name": "My G",
+    "legal_name": "myG Digital / myG (formerly 3G Mobile World)",
+    "founding_year": 2006,
+    "about_short": "My G is a Kerala-headquartered consumer electronics and appliances retail chain that began as 3G Mobile World and rebranded to myG. The chain operates many showrooms across Kerala and runs an online store.",
+    "headquarters": "Kozhikode, Kerala, India (regional HQ / presence across Kerala)",
+    "product_categories": [
+      "Mobile phones",
+      "Laptops & PCs",
+      "Mobile accessories",
+      "Televisions & entertainment",
+      "Home appliances (washing machines, refrigerators, ACs)",
+      "Kitchen appliances (chimneys, gas stoves, cooktops, mixers)"
+    ],
+    "official_website": "https://www.myg.in",
+    "key_facts_cited": [
+      {
+        "fact": "Founded as 3G Mobile World in 2006 and rebranded as myG.",
+        "source": "myG about pages"
+      },
+      {
+        "fact": "Operates large-format 'myG Future' showrooms for appliances and 100+ showrooms across Kerala.",
+        "source": "myG news/corporate & industry coverage"
+      },
+      {
+        "fact": "Provides product sales, exchange offers, EMIs, extended warranties and in-store tech-advisor guidance.",
+        "source": "myG news & store pages"
+      }
+    ]
+  },
+  "showroom_layout": {
+    "floors": {
+      "ground_floor": {
+        "description": "Customer-facing area. Bot's starting location is here.",
+        "bot_start_position": {
+          "floor": "ground_floor",
+          "location_description": "Standing near the central demo desk on the ground floor.",
+          "orientation": "facing into showroom",
+          "left_side": "Mobiles, Laptops, Mobile Accessories",
+          "right_side": "Entertainment & Accessories, Music, TVs",
+          "upstairs": "Washing machines, Refrigerators, AC, Kitchen Appliances, Chimneys, Gas Stoves (first floor)"
+        },
+        "sections": [
+          {
+            "section_id": "mobiles",
+            "section_name": "Mobiles",
+            "floor": "ground_floor",
+            "description": "Smartphones and feature phones across major brands. Display counters include demo units and security-tethered devices.",
+            "products": [
+              {
+                "id": "mob-001",
+                "brand": "Apple",
+                "model": "iPhone 14",
+                "short_description": "Flagship-class smartphone with solid camera performance and iOS ecosystem.",
+                "key_specs": {"display":"6.1\" OLED","chip":"A15/A16 (varies by variant)","ram":"6 GB","storage":"128/256/512 GB","battery":"~3279 mAh","os":"iOS"},
+                "price_range_inr": "55,000 - 95,000",
+                "faqs": [
+                  "Do you have demo units for the iPhone 14?",
+                  "What warranty and AppleCare options are available?"
+                ]
+              },
+              {
+                "id": "mob-002",
+                "brand": "Apple",
+                "model": "iPhone 13",
+                "short_description": "Previous-gen Apple smartphone, popular as a value flagship.",
+                "key_specs": {"display":"6.1\" OLED","chip":"A15 Bionic","ram":"4-6 GB","storage":"128/256 GB","battery":"~3240 mAh","os":"iOS"},
+                "price_range_inr": "40,000 - 65,000",
+                "faqs": ["Is the iPhone 13 still available new or only refurbished?"]
+              },
+              {
+                "id": "mob-003",
+                "brand": "Samsung",
+                "model": "Galaxy S23",
+                "short_description": "Premium Android phone with AMOLED display and strong camera features.",
+                "key_specs": {"display":"6.1\" AMOLED","chip":"Snapdragon/Exynos","ram":"8 GB","storage":"128/256 GB","battery":"~3900 mAh","os":"Android"},
+                "price_range_inr": "60,000 - 85,000",
+                "faqs": ["Do you have exchange offers for Samsung phones?"]
+              },
+              {
+                "id":"mob-004",
+                "brand":"Samsung",
+                "model":"Galaxy A54",
+                "short_description":"Mid-range Samsung phone with good battery and display.",
+                "key_specs":{"display":"6.4\" Super AMOLED","ram":"6/8 GB","storage":"128/256 GB","battery":"5000 mAh","os":"Android"},
+                "price_range_inr":"20,000 - 30,000",
+                "faqs":["Which color options are available in-store?"]
+              },
+              {
+                "id":"mob-005",
+                "brand":"OnePlus",
+                "model":"OnePlus 11",
+                "short_description":"Performance-oriented Android with fast charging.",
+                "key_specs":{"display":"6.7\" AMOLED","chip":"Snapdragon 8 Gen","ram":"8/12 GB","storage":"128/256 GB","battery":"5000 mAh","os":"Android"},
+                "price_range_inr":"40,000 - 60,000",
+                "faqs":["Do you provide official OnePlus accessories?"]
+              },
+              {
+                "id":"mob-006",
+                "brand":"Xiaomi",
+                "model":"Redmi Note Series (example: Note 12)",
+                "short_description":"Value-for-money mainstream phone popular in India.",
+                "key_specs":{"display":"6.5\" LCD / AMOLED","ram":"4/8 GB","storage":"64/128 GB","battery":"5000 mAh","os":"Android"},
+                "price_range_inr":"10,000 - 18,000",
+                "faqs":["Are there bank EMI offers for Redmi phones?"]
+              },
+              {
+                "id":"mob-007",
+                "brand":"Realme",
+                "model":"Realme Narzo / 11 series",
+                "short_description":"Budget to mid-range phones with attractive pricing.",
+                "key_specs":{"display":"6.5\"","ram":"4/8 GB","storage":"64/128 GB","battery":"5000 mAh","os":"Android"},
+                "price_range_inr":"8,000 - 18,000",
+                "faqs":["Do you have protective cases and screen guards?"]
+              },
+              {
+                "id":"mob-008",
+                "brand":"Vivo",
+                "model":"Vivo V27",
+                "short_description":"Camera-focused phone with premium finish.",
+                "key_specs":{"display":"6.4\" AMOLED","ram":"8 GB","storage":"128/256 GB","battery":"4600 mAh","os":"Android"},
+                "price_range_inr":"20,000 - 35,000",
+                "faqs":["What are the camera specs for the Vivo V27?"]
+              },
+              {
+                "id":"mob-009",
+                "brand":"Oppo",
+                "model":"Oppo Reno Series",
+                "short_description":"Design-forward phones with solid camera hardware.",
+                "key_specs":{"display":"6.5\" AMOLED","ram":"8 GB","storage":"128/256 GB","battery":"4500 mAh","os":"Android"},
+                "price_range_inr":"18,000 - 35,000",
+                "faqs":["Do you offer screen replacement services?"]
+              },
+              {
+                "id":"mob-010",
+                "brand":"Google",
+                "model":"Pixel 7",
+                "short_description":"Android experience phone with clean OS and strong camera software.",
+                "key_specs":{"display":"6.3\" OLED","chip":"Google Tensor","ram":"8 GB","storage":"128/256 GB","battery":"~4350 mAh","os":"Android"},
+                "price_range_inr":"45,000 - 60,000",
+                "faqs":["Do you offer accessories compatible with Pixel phones?"]
+              }
+            ]
+          },
+          {
+  "section_id": "laptops",
+  "section_name": "Laptops & Notebooks",
+  "floor": "ground_floor",
+  "description": "Ultrabooks, gaming laptops, premium business notebooks and student laptops. Demo units available for hands-on experience.",
+  "products": [
+    {
+      "id": "lap-001",
+      "brand": "Apple",
+      "model": "MacBook Air M2",
+      "short_description": "Thin and lightweight Apple laptop with excellent battery life and macOS ecosystem.",
+      "key_specs": {
+        "display": "13.6\" Liquid Retina",
+        "chip": "Apple M2",
+        "ram": "8-16 GB",
+        "storage": "256GB-1TB SSD"
+      },
+      "price_range_inr": "90,000 - 1,60,000",
+      "faqs": [
+        "Do you have MacBook Air M2 base and upgraded variants in stock?"
+      ]
+    },
+    {
+      "id": "lap-003",
+      "brand": "Dell",
+      "model": "XPS 13",
+      "short_description": "Premium Windows ultrabook with compact design and high-resolution display.",
+      "key_specs": {
+        "display": "13.4\" FHD+/OLED",
+        "chip": "Intel Core i5 / i7",
+        "ram": "8-32 GB",
+        "storage": "256GB-1TB SSD"
+      },
+      "price_range_inr": "90,000 - 2,00,000",
+      "faqs": [
+        "Do you offer student discounts on Dell XPS models?"
+      ]
+    },
+    {
+      "id": "lap-005",
+      "brand": "Lenovo",
+      "model": "Legion 5",
+      "short_description": "Gaming laptop with high refresh rate display and powerful RTX graphics.",
+      "key_specs": {
+        "display": "15.6\" 120Hz",
+        "chip": "AMD Ryzen 7",
+        "gpu": "NVIDIA RTX series",
+        "ram": "16-32 GB",
+        "storage": "512GB-2TB SSD"
+      },
+      "price_range_inr": "1,20,000 - 2,00,000",
+      "faqs": [
+        "Do you have demo units for Lenovo Legion gaming laptops?"
+      ]
+    },
+    {
+      "id": "lap-006",
+      "brand": "ASUS",
+      "model": "ROG Zephyrus G14",
+      "short_description": "Compact gaming powerhouse with OLED display and RTX graphics.",
+      "key_specs": {
+        "display": "14\" 3K OLED 120Hz",
+        "chip": "AMD Ryzen 9",
+        "gpu": "RTX 4060",
+        "ram": "16-32 GB",
+        "storage": "512GB-1TB SSD"
+      },
+      "price_range_inr": "1,40,000 - 1,80,000",
+      "faqs": [
+        "Can I test gaming performance in-store?"
+      ]
+    },
+    {
+      "id": "lap-009",
+      "brand": "Lenovo",
+      "model": "ThinkPad T14",
+      "short_description": "Reliable business laptop known for durability and keyboard experience.",
+      "key_specs": {
+        "display": "14\" FHD",
+        "chip": "Intel Core Ultra / AMD Ryzen",
+        "ram": "8-32 GB",
+        "storage": "512GB-1TB SSD"
+      },
+      "price_range_inr": "1,20,000 - 1,80,000",
+      "faqs": [
+        "Is corporate bulk purchase support available?"
+      ]
+    },
+    {
+      "id": "lap-010",
+      "brand": "Xiaomi",
+      "model": "RedmiBook 15",
+      "short_description": "Affordable laptop for students and everyday productivity tasks.",
+      "key_specs": {
+        "display": "15.6\" FHD",
+        "chip": "Intel Core i5",
+        "ram": "8-16 GB",
+        "storage": "256GB-512GB SSD"
+      },
+      "price_range_inr": "35,000 - 50,000",
+      "faqs": [
+        "Do you bundle Office or antivirus with this laptop?"
+      ]
+    }
+  ]
+}
+,
+          {
+            "section_id": "mobile_accessories",
+            "section_name": "Mobile Accessories",
+            "floor": "ground_floor",
+            "description": "Chargers, cables, power banks, cases, screen guards, earphones, Bluetooth speakers and smart-wearables.",
+            "subsections": [
+              {
+                "subsection_name": "Earphones & Headphones (in-store demo area)",
+                "products": [
+                  {"id":"acc-ear-001","brand":"Apple","model":"AirPods Pro (Gen 2)","short_description":"True wireless earbuds with ANC and transparency mode.","key_specs":{"battery":"~24 hrs w/ case","features":"ANC, spatial audio"},"price_range_inr":"18,000 - 25,000","faqs":["Can I test ANC in-store?"]},
+                  {"id":"acc-ear-002","brand":"Sony","model":"WH-1000XM4/5","short_description":"Top-tier over-ear noise-cancelling headphones.","key_specs":{"battery":"~30 hrs","features":"ANC, multipoint"},"price_range_inr":"22,000 - 30,000","faqs":["Do you service Sony headphones?"]},
+                  {"id":"acc-ear-003","brand":"Bose","model":"QC45","short_description":"Comfortable ANC headphones with balanced sound.","key_specs":{"battery":"~24 hrs","features":"ANC"},"price_range_inr":"25,000 - 30,000","faqs":["Is warranty international or local?"]},
+                  {"id":"acc-ear-004","brand":"JBL","model":"Tune / Live series","short_description":"Affordable TWS and on-ear options with bass-forward tuning.","key_specs":{"battery":"~20 hrs w/ case"},"price_range_inr":"2,000 - 10,000","faqs":["Do you offer demo listening stations?"]},
+                  {"id":"acc-ear-005","brand":"OnePlus","model":"OnePlus Buds Pro","short_description":"TWS with fast pairing and low-latency mode.","key_specs":{"battery":"~38 hrs w/ case","features":"low latency"},"price_range_inr":"4,000 - 9,000","faqs":["Compatible with which OnePlus models?"]},
+                  {"id":"acc-ear-006","brand":"Sennheiser","model":"Momentum Wireless","short_description":"High-fidelity over-ear headphones.","key_specs":{"battery":"~17 hrs"},"price_range_inr":"18,000 - 30,000","faqs":["Are spare ear cushions available?"]},
+                  {"id":"acc-ear-007","brand":"Boat","model":"Airdopes series","short_description":"Popular India-focused TWS brand for budget buyers.","key_specs":{"battery":"~20-35 hrs w/ case"},"price_range_inr":"1,000 - 5,000","faqs":["Do you stock multiple Boat models?"]},
+                  {"id":"acc-ear-008","brand":"Realme","model":"Buds series","short_description":"Budget TWS with good features for price.","key_specs":{"battery":"~20-30 hrs"},"price_range_inr":"1,000 - 4,000","faqs":["Which color variants are in-store?"]},
+                  {"id":"acc-ear-009","brand":"Xiaomi","model":"Redmi Earbuds","short_description":"Value TWS and wired options.","key_specs":{"battery":"~18-30 hrs"},"price_range_inr":"800 - 3,000","faqs":["Do you offer combos with phones?"]},
+                  {"id":"acc-ear-010","brand":"Skullcandy","model":"Wireless & Wired","short_description":"Style-forward audio accessories.","key_specs":{"battery":"~6-40 hrs"},"price_range_inr":"1,000 - 10,000","faqs":["Are demo units available for trial?"]}
+                ]
+              },
+              {
+                "subsection_name":"Chargers & Power",
+                "products":[
+                  {"id":"acc-chr-001","brand":"Anker","model":"PowerPort","short_description":"High-quality power banks & fast chargers.","key_specs":{"capacity":"10,000 - 20,000 mAh","features":"PD, QC"},"price_range_inr":"1,500 - 6,000"},
+                  {"id":"acc-chr-002","brand":"Mi","model":"Power Bank","short_description":"Value power banks with good build.","key_specs":{"capacity":"10,000 - 20,000 mAh"},"price_range_inr":"800 - 2,000"}
+                ],
+                "faqs":["Which chargers support fast charge for Samsung / OnePlus?"]
+              },
+              {
+                "subsection_name":"Cases & Screen Guards",
+                "products":[
+                  {"id":"acc-case-001","type":"Tempered Glass","short_description":"Screen protection available for most popular models","price_range_inr":"199 - 1,499"},
+                  {"id":"acc-case-002","type":"Silicone / Hard Cases","short_description":"Multiple styles and colors","price_range_inr":"299 - 2,499"}
+                ],
+                "faqs":["Can you install a tempered glass protector on purchase?"]
+              }
+            ]
+          },
+          {
+            "section_id": "entertainment",
+            "section_name": "Entertainment & Music Accessories",
+            "floor": "ground_floor",
+            "description": "Bluetooth speakers, home audio, soundbars, music players and accessories. Demo listening area on right side of ground floor.",
+            "products": [
+              {"id":"ent-001","brand":"JBL","model":"PartyBox / Speaker series","short_description":"Portable high-volume Bluetooth speakers for parties.","key_specs":{"output":"High power","features":"Bluetooth, mic input"},"price_range_inr":"5,000 - 80,000"},
+              {"id":"ent-002","brand":"Sony","model":"Home Theatre / Soundbar series","short_description":"Soundbars and home theatre kits for TV audio enhancement.","key_specs":{"channels":"2.1 - 7.1","features":"DTS, Dolby"},"price_range_inr":"10,000 - 1,50,000"},
+              {"id":"ent-003","brand":"Bose","model":"Home Speakers / Soundbars","short_description":"Premium audio solutions with balanced sound.","key_specs":{"features":"multi-room, voice assistants"},"price_range_inr":"20,000 - 2,00,000"},
+              {"id":"ent-004","brand":"Boat","model":"Speakers & Soundbars","short_description":"Affordable audio for casual listeners.","key_specs":{},"price_range_inr":"1,000 - 25,000"},
+              {"id":"ent-005","brand":"Sonos","model":"Smart Speakers","short_description":"Multi-room streaming and smart home integration.","key_specs":{},"price_range_inr":"20,000 - 1,50,000"},
+              {"id":"ent-006","brand":"Marshall","model":"Acton / Stanmore","short_description":"Design-forward speakers with retro look.","key_specs":{},"price_range_inr":"15,000 - 60,000"},
+              {"id":"ent-007","brand":"Philips","model":"Bluetooth Speakers","short_description":"Mass-market speakers for everyday use.","price_range_inr":"1,000 - 15,000"},
+              {"id":"ent-008","brand":"LG","model":"Soundbars","short_description":"Soundbars paired with LG TVs for optimized performance.","price_range_inr":"12,000 - 1,20,000"},
+              {"id":"ent-009","brand":"Yamaha","model":"Receivers & Speakers","short_description":"AV receivers for home theatre enthusiasts.","price_range_inr":"25,000 - 2,50,000"},
+              {"id":"ent-010","brand":"Philips / Sony","model":"Portable MP3 / Hi-Res players","short_description":"For audiophile or niche users.","price_range_inr":"2,000 - 40,000"}
+            ]
+          },
+          {
+            "section_id": "tvs",
+            "section_name": "Televisions",
+            "floor": "ground_floor",
+            "description": "LED / QLED / OLED demo wall with mounted TVs and live content streams for picture-quality comparison.",
+            "products": [
+              {"id":"tv-001","brand":"Samsung","model":"QLED Series","short_description":"QLED TVs with high brightness and color gamut.","key_specs":{"sizes":"43\" - 85+\"","features":"QLED, 4K/8K, HDR"},"price_range_inr":"35,000 - 7,00,000"},
+              {"id":"tv-002","brand":"LG","model":"OLED Series","short_description":"OLED TVs with deep blacks and high contrast.","key_specs":{"sizes":"42\" - 83\"","features":"OLED, 4K, HDR"},"price_range_inr":"80,000 - 8,00,000"},
+              {"id":"tv-003","brand":"Sony","model":"Bravia OLED / LED","short_description":"Premium picture processing and sound tuning.","key_specs":{"sizes":"43\" - 85\"","features":"4K, HDR, Google TV"},"price_range_inr":"60,000 - 8,00,000"},
+              {"id":"tv-004","brand":"Xiaomi","model":"Mi TV / QLED models","short_description":"Value smart TVs with Android TV/Google TV.","key_specs":{"sizes":"32\" - 75\""},"price_range_inr":"10,000 - 80,000"},
+              {"id":"tv-005","brand":"OnePlus","model":"OnePlus TV","short_description":"Smart TV with OxygenPlay / Google TV integration.","key_specs":{},"price_range_inr":"20,000 - 1,20,000"},
+              {"id":"tv-006","brand":"TCL","model":"QLED / Mini-LED","short_description":"Feature-rich value TVs.","key_specs":{},"price_range_inr":"15,000 - 90,000"},
+              {"id":"tv-007","brand":"Philips","model":"Ambilight / LED TVs","short_description":"Unique Ambilight experience on select models.","key_specs":{},"price_range_inr":"20,000 - 1,20,000"},
+              {"id":"tv-008","brand":"Panasonic","model":"LED / OLED","short_description":"Reliable picture quality and Android integration on some models.","key_specs":{},"price_range_inr":"25,000 - 1,50,000"},
+              {"id":"tv-009","brand":"Hisense","model":"ULED / LED","short_description":"Budget-friendly smart TV options.","price_range_inr":"12,000 - 70,000"},
+              {"id":"tv-010","brand":"Kodak","model":"Smart TVs","short_description":"Entry-level to mid-range smart TVs for price-conscious buyers.","price_range_inr":"10,000 - 55,000"}
+            ]
+          }
+        ]
+      },
+      "first_floor": {
+        "description": "Large-format appliances and heavy items. Customers are guided upstairs for demo and delivery discussions.",
+        "sections": [
+          {
+            "section_id":"washing_machines",
+            "section_name":"Washing Machines",
+            "floor":"first_floor",
+            "description":"Top-load & front-load washing machines, semi-automatic and fully automatic, demo units for drum and wash cycles.",
+            "products":[
+              {"id":"wm-001","brand":"LG","model":"Front Load 7/8/10 kg","short_description":"Inverter motor, steam wash & multiple wash programs.","key_specs":{"capacity":"7-10 kg","features":"Inverter, 6 motion, steam"},"price_range_inr":"25,000 - 70,000"},
+              {"id":"wm-002","brand":"Samsung","model":"QuickDrive / EcoBubble","short_description":"Front-load with energy efficient features.","key_specs":{},"price_range_inr":"30,000 - 80,000"},
+              {"id":"wm-003","brand":"Whirlpool","model":"FreshCare / 360","short_description":"Durable top-load and front-load options.","price_range_inr":"18,000 - 65,000"},
+              {"id":"wm-004","brand":"IFB","model":"Front-load 6-9 kg","short_description":"Strong detergents handling and long-life motors.","price_range_inr":"25,000 - 70,000"},
+              {"id":"wm-005","brand":"Bosch","model":"Front-load series","short_description":"Build quality and efficient wash programs.","price_range_inr":"30,000 - 90,000"},
+              {"id":"wm-006","brand":"Haier","model":"Top-load & Front-load","short_description":"Value choices with good warranty.","price_range_inr":"15,000 - 55,000"},
+              {"id":"wm-007","brand":"Godrej","model":"Top-load / Semi-auto","short_description":"Budget friendly options.","price_range_inr":"12,000 - 45,000"},
+              {"id":"wm-008","brand":"Panasonic","model":"Front-load / Top-load","short_description":"Reliable consumer options.","price_range_inr":"18,000 - 65,000"},
+              {"id":"wm-009","brand":"Samsung","model":"Top-load (select models)","short_description":"Good value top-loads with smart features.","price_range_inr":"18,000 - 50,000"},
+              {"id":"wm-010","brand":"LG","model":"TwinWash / Dualwash (select markets)","short_description":"Specialised models for small loads and delicates.","price_range_inr":"60,000 - 1,20,000"}
+            ],
+            "faqs":["Do you provide installation for washing machines?","What is the typical delivery lead-time?"]
+          },
+          {
+            "section_id":"refrigerators",
+            "section_name":"Refrigerators",
+            "floor":"first_floor",
+            "description":"Single-door, double-door, French door, side-by-side and smart fridge options on display.",
+            "products":[
+              {"id":"ref-001","brand":"LG","model":"Frost-free Double Door","short_description":"Inverter compressor, multi-air flow.","key_specs":{"capacity_l":"200 - 700 L"},"price_range_inr":"25,000 - 2,00,000"},
+              {"id":"ref-002","brand":"Samsung","model":"Family Hub / Frost-free","short_description":"Smart features on selected high-end models.","price_range_inr":"30,000 - 3,00,000"},
+              {"id":"ref-003","brand":"Whirlpool","model":"IFRESH / Double Door","short_description":"Strong cooling and storage options.","price_range_inr":"20,000 - 1,50,000"},
+              {"id":"ref-004","brand":"Godrej","model":"Double Door / Side-by-side","short_description":"Value-heavy choices.","price_range_inr":"15,000 - 1,50,000"},
+              {"id":"ref-005","brand":"Haier","model":"Inverter & Frost-free","short_description":"Budget to mid-range fridges.","price_range_inr":"18,000 - 1,20,000"},
+              {"id":"ref-006","brand":"Samsung","model":"Convertible / FlexZone","short_description":"Flexible storage zones for meat/fish/veggies.","price_range_inr":"40,000 - 2,50,000"},
+              {"id":"ref-007","brand":"LG","model":"Door-in-Door / InstaView (select models)","short_description":"Convenience features for frequent access items.","price_range_inr":"70,000 - 3,00,000"},
+              {"id":"ref-008","brand":"Bosch","model":"Premium fridges","short_description":"Built for reliability and cooling tech.","price_range_inr":"60,000 - 3,00,000"},
+              {"id":"ref-009","brand":"Panasonic","model":"Top-mounted & bottom-mounted","short_description":"Solid mid-range performers.","price_range_inr":"20,000 - 1,50,000"},
+              {"id":"ref-010","brand":"Haier","model":"Smart inverter models","short_description":"Energy saving fridge models.","price_range_inr":"25,000 - 1,50,000"}
+            ],
+            "faqs":["What is the delivery and installation process for large refrigerators?","Are stabilizers required for these models?"]
+          },
+          {
+            "section_id":"ac",
+            "section_name":"Air Conditioners (AC)",
+            "floor":"first_floor",
+            "description":"Split ACs, window ACs, inverter models and commercial units displayed with cooling capacity guidance.",
+            "products":[
+              {"id":"ac-001","brand":"LG","model":"Dual Inverter Split AC","short_description":"Energy efficient inverter AC series.","key_specs":{"tonnage":"1 - 2.5 Ton"},"price_range_inr":"30,000 - 1,50,000"},
+              {"id":"ac-002","brand":"Samsung","model":"WindFree / Inverter","short_description":"Cooling with low-draft technology on some models.","price_range_inr":"35,000 - 1,80,000"},
+              {"id":"ac-003","brand":"Voltas","model":"Split & Window ACs","short_description":"Well-known in India for service network.","price_range_inr":"25,000 - 1,20,000"},
+              {"id":"ac-004","brand":"Blue Star","model":"Split ACs","short_description":"Commercial and residential models.","price_range_inr":"35,000 - 2,00,000"},
+              {"id":"ac-005","brand":"Daikin","model":"Inverter split","short_description":"Premium cooling and durability.","price_range_inr":"40,000 - 2,50,000"},
+              {"id":"ac-006","brand":"Hitachi","model":"Inverter split","short_description":"Reliable and energy efficient.","price_range_inr":"45,000 - 2,50,000"},
+              {"id":"ac-007","brand":"Carrier","model":"Split ACs","short_description":"Heavy-duty and residential options.","price_range_inr":"35,000 - 2,00,000"},
+              {"id":"ac-008","brand":"Godrej","model":"Split & Window","short_description":"Budget-friendly options with local service.","price_range_inr":"20,000 - 1,50,000"},
+              {"id":"ac-009","brand":"Panasonic","model":"Inverter ACs","short_description":"Efficient home cooling options.","price_range_inr":"35,000 - 1,80,000"},
+              {"id":"ac-010","brand":"Whirlpool","model":"Inverter ACs","short_description":"Appliance maker branching into cooling solutions in some markets.","price_range_inr":"30,000 - 1,50,000"}
+            ],
+            "faqs":["Do you provide installation and outdoor unit placement services?","Are there promotional offers for AC + installation bundles?"]
+          },
+          {
+            "section_id":"kitchen_appliances",
+            "section_name":"Kitchen Appliances",
+            "floor":"first_floor",
+            "description":"Microwaves, chimneys, gas stoves, built-in ovens, mixer grinders and small appliances.",
+            "products":[
+              {"id":"kch-001","brand":"LG","model":"Microwave / Oven series","short_description":"Convection and solo microwaves.","price_range_inr":"6,000 - 60,000"},
+              {"id":"kch-002","brand":"Bosch","model":"Built-in ovens / Hob","short_description":"Premium built-in solutions for modular kitchens.","price_range_inr":"25,000 - 2,50,000"},
+              {"id":"kch-003","brand":"Elica","model":"Chimneys","short_description":"Range of kitchen chimneys with various suction capacities.","price_range_inr":"8,000 - 60,000"},
+              {"id":"kch-004","brand":"Faber","model":"Chimneys & Hobs","short_description":"Leading chimney brand with varied designs.","price_range_inr":"8,000 - 60,000"},
+              {"id":"kch-005","brand":"Prestige / Pigeon","model":"Gas Stoves / Induction","short_description":"Cooktops for Indian kitchens (gas and induction).","price_range_inr":"1,500 - 25,000"},
+              {"id":"kch-006","brand":"Havells","model":"Chimney / Hobs","short_description":"Modular kitchen compatible products.","price_range_inr":"5,000 - 50,000"},
+              {"id":"kch-007","brand":"IFB","model":"Built-in ovens / hobs","short_description":"High-quality built-ins.","price_range_inr":"25,000 - 2,00,000"},
+              {"id":"kch-008","brand":"Whirlpool","model":"Microwave & Hobs","short_description":"Mass-market appliances fitted to Indian kitchens.","price_range_inr":"8,000 - 80,000"},
+              {"id":"kch-009","brand":"Samsung","model":"Microwave / Ovens","short_description":"Smart features in selected models.","price_range_inr":"10,000 - 1,00,000"},
+              {"id":"kch-010","brand":"Godrej","model":"Gas Stoves & Chimneys","short_description":"Value offerings with local service.","price_range_inr":"5,000 - 50,000"}
+            ],
+            "faqs":["Do you provide chimney installation and ducting?","Which cooktops suit a 3-burner gas inlet layout?"]
+          }
+        ]
+      }
+    }
+  },
+  "conversational_helpers": {
+    "example_prompts": [
+      {"user":"Where are the TVs?","bot_expected_answer":"On the ground floor — to my right from the central demo desk. I can show you the TV demo wall where we have OLED, QLED and LED models."},
+      {"user":"Do you have OnePlus 11 in stock?","bot_expected_answer":"I can check the OnePlus 11 availability on the ground-floor mobiles section. Would you like me to check stock for a particular color or storage size?"},
+      {"user":"Where can I find washing machines?","bot_expected_answer":"Washing machines are on the first floor. I can guide you to the upstairs escalator / staircase and show the demo models."},
+      {"user":"What is My G?","bot_expected_answer":"My G is a Kerala-based consumer electronics retailer (started as 3G Mobile World in 2006), operating many showrooms and an online store. We sell mobiles, laptops, TVs, and home appliances, and offer services like EMI and extended warranties."}
+    ],
+    "location_clues_for_bot": {
+      "if_user_near_entrance": "Welcome! I'm standing on the ground floor near the demo desk. Left is mobiles & laptops; right is the TV and entertainment wall. For larger appliances like refrigerators and washing machines, please follow me upstairs.",
+      "if_user_asks_about_installation": "We offer installation for appliances like AC, washing machines and refrigerators. I can check the model's installation terms and delivery lead time."
+    }
+  },
+  "admin_notes": {
+    "update_recommendation": "Keep product list updated monthly or whenever there are major new model launches. Use official brand APIs or manufacturer pages for exact specs and MRP.",
+    "company_sources": [
+      "https://www.myg.in/about-us/",
+      "https://www.myg.in/storelocator/",
+      "https://www.myg.in/news-and-events/"
+    ]
+  }
+}

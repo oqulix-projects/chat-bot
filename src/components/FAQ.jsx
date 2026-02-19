@@ -11,25 +11,27 @@ const showroomFAQs = [
   { id: 8, question: "I'm interested in a soundbar for my TV. Where should I look?" },
 ];
 
-const FAQ = ({ handleAsk }) => {
+const FAQ = ({ handleAsk, setShowShowcase,loading }) => {
 
   const handleQuestionClick = (questionText) => {
     handleAsk(questionText);
+    questionText=="I need a gaming laptop. What brands and options do you have?"?setShowShowcase(true):setShowShowcase(false)
   };
 
   return (
-    <div className="absolute top-28 right-6 w-180 h-50 bg-black/60 backdrop-blur-md rounded-2xl p-4 shadow-xl z-30" style={{marginTop:'10px'}}>
+    <div className="absolute top-28 right-6 w-180 h-80 bg-black/60 backdrop-blur-md rounded-2xl p-4 shadow-xl z-30" style={{marginTop:'10px'}}>
 
       <p className="text-sm text-gray-300 mb-3 font-semibold tracking-wide">
         Quick Questions
       </p>
 
-      <div className="flex flex-col gap-2 max-h-34 overflow-y-auto pr-1">
+      <div className="flex flex-col gap-2 max-h-70 overflow-y-auto pr-1" >
         {showroomFAQs.map((faq) => (
-          <button
+          <button style={loading?{filter:'opacity(0.2)'}:{filter:'opacity(1)'}}
+          disabled={loading}
             key={faq.id}
             onClick={() => handleQuestionClick(faq.question)}
-            className="text-left text-sm bg-gray-800 hover:bg-orange-500 hover:text-white transition px-4 py-2 rounded-xl"
+            className="text-left text-lg bg-gray-800 hover:bg-orange-500 hover:text-white transition px-4 py-3 rounded-xl"
           >
             {faq.question}
           </button>

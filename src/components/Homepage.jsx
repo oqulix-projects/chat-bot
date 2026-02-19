@@ -1,5 +1,5 @@
 // File: src/components/Homepage.jsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { uploadFile, askQuestion } from "../services/service";
 // import "./Homepage.css";
 import SpeechToText from "./SpeechToText";
@@ -11,6 +11,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getAuth, signOut } from "firebase/auth";
 import WaveDetector from "./WaveDetector";
 import FAQ from "./FAQ";
+import LaptopsShowcase from "./LaptopsShowcase";
+import Oq from "./Oq";
+
 
 // 🌟 OPTIMIZATION 1: Move constants OUTSIDE the component to ensure stability (never re-created)
 const greetings = {
@@ -60,6 +63,7 @@ const Homepage = () => {
   const [talking, setTalking] = useState(false);
   const [token, setToken] = useState("");
   const [displaySubtitle, setDisplaySubtitle] = useState("");
+  const [showShowcase,setShowShowcase]=useState(false)
 
   const [isListening, setIsListening] = useState(false);
 
@@ -97,8 +101,18 @@ const Homepage = () => {
       setSubtitle(chat[chat.length - 1].text);
   }, [chat]);
 
+const audioRef = useRef(null);
 
-  const handleAsk = async (questionToAsk) => {
+const handleAsk = async (questionToAsk) => {
+
+  // 🔴 Force stop any ongoing speech immediately
+if (audioRef.current) {
+  audioRef.current.pause();
+  audioRef.current.currentTime = 0;
+  audioRef.current = null;
+  setTalking(false);
+}
+
     console.log("asking");
     console.log(questionToAsk);
 
@@ -133,69 +147,86 @@ const Homepage = () => {
     }
 
     async function playTTS(text) {
-      console.log("GCP service playing TTS");
+  console.log("GCP service playing TTS");
 
-      // store the cleaned text
-      const cleanedText = cleanText(text);
-      console.log("Cleaned text:", cleanedText);
+  const cleanedText = cleanText(text);
+  console.log("Cleaned text:", cleanedText);
 
-      try {
-        setTalking(true); // start talking state immediately
-        let voiceName;
-        let languageCode;
-
-        switch (language.toLowerCase()) {
-          case "malayalam":
-            languageCode = "ml-IN";
-            voiceName = "ml-IN-Wavenet-A";
-            break;
-          case "hindi":
-            languageCode = "hi-IN";
-            voiceName = "hi-IN-Wavenet-A";
-            break;
-          case "arabic":
-            languageCode = "ar-XA";
-            voiceName = "ar-XA-Chirp3-HD-Achernar";
-            break;
-          case "english":
-          default:
-            languageCode = "en-US";
-            voiceName = "en-US-Wavenet-F";
-            break;
-        }
-
-        // const idToken = await auth.currentUser.getIdToken();
-
-        const resp = await fetch("https://oqulix-chat-server.onrender.com/speak", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: cleanedText, //send cleaned text
-            languageCode,
-            voiceName,
-          }),
-        });
-
-        if (!resp.ok) throw new Error("TTS request failed");
-
-        const buf = await resp.arrayBuffer();
-        const blob = new Blob([buf], { type: "audio/mpeg" });
-        const url = URL.createObjectURL(blob);
-
-        const audio = new Audio(url);
-
-        // Track start/end/error like in Web Speech API
-        audio.onplay = () => setTalking(true);
-        audio.onended = () => {setTalking(false)
-           setIsListening(true)};
-        audio.onerror = () => setTalking(false);
-
-        await audio.play();
-      } catch (err) {
-        console.error("Error in playTTS:", err);
-        setTalking(false);
-      }
+  try {
+    // 🔴 STOP any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
     }
+
+    setTalking(true);
+
+    let voiceName;
+    let languageCode;
+
+    switch (language.toLowerCase()) {
+      case "malayalam":
+        languageCode = "ml-IN";
+        voiceName = "ml-IN-Wavenet-A";
+        break;
+      case "hindi":
+        languageCode = "hi-IN";
+        voiceName = "hi-IN-Wavenet-A";
+        break;
+      case "arabic":
+        languageCode = "ar-XA";
+        voiceName = "ar-XA-Chirp3-HD-Achernar";
+        break;
+      case "english":
+      default:
+        languageCode = "en-US";
+        voiceName = "en-US-Wavenet-F";
+        break;
+    }
+
+    const resp = await fetch(
+      "https://oqulix-chat-server.onrender.com/speak",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: cleanedText,
+          languageCode,
+          voiceName,
+        }),
+      }
+    );
+
+    if (!resp.ok) throw new Error("TTS request failed");
+
+    const buf = await resp.arrayBuffer();
+    const blob = new Blob([buf], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
+
+    const audio = new Audio(url);
+    audioRef.current = audio; // 🔵 store reference
+
+    audio.onplay = () => setTalking(true);
+
+    audio.onended = () => {
+      setTalking(false);
+      setIsListening(true);
+      audioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      setTalking(false);
+      audioRef.current = null;
+    };
+
+    await audio.play();
+  } catch (err) {
+    console.error("Error in playTTS:", err);
+    setTalking(false);
+  }
+}
+
     // add user message to chat
     setChat((p) => [...p, { role: "user", text: questionToAsk }]);
     setLoading(true);
@@ -335,27 +366,23 @@ const Homepage = () => {
     {/* ================= HEADER ================= */}
     <div className="bg-orange-500 px-8 py-5 flex items-center justify-between shadow-lg">
 
-      <div className="flex items-center gap-4">
-        <img src="/myg.png" style={{width:'70px',height:'70px'}} alt="MYG Logo" className="h-12" />
+      <div className="flex items-center gap-4" style={{alignItems:'center'}}>
+        <img src="/myg.png" style={{width:'90px',borderRadius:'5px'}} alt="MYG Logo" className="h-12" />
         <h1 className="text-3xl font-bold tracking-wide">
-          MYG Assistant
+          Assistant
         </h1>
       </div>
 
-      <button
-        onClick={logoutUser}
-        className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition"
-      >
-        Logout
-      </button>
-    </div>
+<div className="flex" style={{justifyContent:'right',gap:'30px'}}> 
+  
+  
+<a href="https://www.myg.in/" className="h-10 w-28 flex justify-center bg-white text-orange-500 rounded-3xl" style={{alignItems:'center',fontWeight:'800'}}>Shop Now</a>
+  
+  <div className="flex flex-col gap-6 ">
 
-<div className=" p-6 flex gap-10 z-30" style={{width:'95%'}}>
+  
 
-  {/* LEFT SIDE — SETTINGS */}
-  <div className="flex flex-col gap-6 min-w-[200px]">
-
-    <label className="flex items-center justify-between gap-3 text-lg">
+    {/* <label className="flex items-center justify-between gap-3 text-lg">
       <span>Background</span>
       <input
         type="checkbox"
@@ -371,11 +398,11 @@ const Homepage = () => {
         onChange={handleCameraCheckboxChange}
         className="w-5 h-5 accent-orange-500"
       />
-    </label>
+    </label> */}
 
     <select
       onChange={(e) => setlanguage(e.target.value)}
-      className="bg-gray-700 text-white px-4 py-3 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+      className="bg-orange-600 text-white px-2 py-2 rounded-xl text-sm w-25 focus:outline-none focus:ring-2 focus:ring-orange-500"
     >
       <option value="english">English</option>
       <option value="malayalam">Malayalam</option>
@@ -385,9 +412,25 @@ const Homepage = () => {
 
   </div>
 
+</div>
+      {/* <button
+        onClick={logoutUser}
+        className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition"
+      >
+        Logout
+      </button> */}
+
+      
+    </div>
+
+<div className=" p-6 flex gap-10 z-30" style={{width:'95%'}}>
+
+  {/* LEFT SIDE — SETTINGS */}
+ 
+
   {/* RIGHT SIDE — FAQ */}
   <div className="overflow-y-auto" >
-    <FAQ handleAsk={handleAsk} />
+    <FAQ loading={loading} handleAsk={handleAsk} setShowShowcase={setShowShowcase}/>
   </div>
 
 </div>
@@ -414,6 +457,7 @@ const Homepage = () => {
     onWaveDetected={handleWave}
     talking={talking}
     background={background}
+    loading={loading}
   />
 </div>
 
@@ -421,6 +465,10 @@ const Homepage = () => {
 
     {/* ================= INPUT SECTION ================= */}
     <div className="bg-gray-850 px-10 py-6 flex flex-col gap-4 z-50" style={{position:'fixed',bottom:'50px',width:'100%'}}>
+
+      {showShowcase&&<div >
+  <LaptopsShowcase/>
+</div>}
 
       {/* Input Row */}
       <div className="flex items-center gap-6">
@@ -442,7 +490,7 @@ const Homepage = () => {
             if (e.key === "Enter" && !loading && !talking)
               handleAsk(question);
           }}
-          className="flex-1 px-6 py-5 text-xl rounded-2xl bg-gray-700 focus:outline-none focus:ring-4 focus:ring-orange-500"
+          className="flex-1 px-6 py-5 text-xl rounded-2xl bg-gray-700/50 focus:outline-none focus:ring-4 focus:ring-orange-500"
         />
 
         {/* Ask Button */}
@@ -468,11 +516,44 @@ const Homepage = () => {
       </div>
 
       {/* ================= SUBTITLES ================= */}
-      <div className="min-h-[70px] text-lg bg-black/40 p-4 rounded-xl">
+
+ {subtitle && subtitle.length > 0 && !loading && <div className="fixed top-120 left-8 z-100 animate-calloutIn" style={{maxWidth:'350px'}}>
+
+  {/* Outer Glow */}
+  <div className="absolute inset-0 rounded-2xl bg-orange-500/20 blur-2xl"></div>
+
+  {/* Main Bubble */}
+  <div className="
+    relative
+    bg-gradient-to-br from-orange-400/80 to-orange-600/80
+    text-white
+    text-sm
+    px-5 py-3
+    rounded-2xl
+    shadow-[0_0_30px_rgba(255,140,0,0.8)]
+    border border-orange-400/40
+    z-20
+  ">
+
+    <ReactMarkdown>
+      {subtitle.length > 0 ? displaySubtitle : " "}
+    </ReactMarkdown>
+
+    {/* Talking Tail Circles */}
+   {/* Talking Tail */}
+
+
+
+  </div>
+</div>}
+
+
+      {/* old subs */}
+      {/* <div className="min-h-[70px] text-sm bg-black/40 p-4 rounded-xl">
         <ReactMarkdown>
           {subtitle.length > 0 ? displaySubtitle : " "}
         </ReactMarkdown>
-      </div>
+      </div> */}
 
       {error && (
         <p className="text-red-400 text-lg">{error}</p>
@@ -495,7 +576,7 @@ const Homepage = () => {
         />
       </div>
     )}
-
+<Oq/>
   </div>
 );
 }
