@@ -13,6 +13,7 @@ import WaveDetector from "./WaveDetector";
 import FAQ from "./FAQ";
 import LaptopsShowcase from "./LaptopsShowcase";
 import Oq from "./Oq";
+import { Send } from "lucide-react";
 
 
 // 🌟 OPTIMIZATION 1: Move constants OUTSIDE the component to ensure stability (never re-created)
@@ -376,7 +377,7 @@ if (audioRef.current) {
 <div className="flex" style={{justifyContent:'right',gap:'30px'}}> 
   
   
-<a href="https://www.myg.in/" className="h-10 w-28 flex justify-center bg-white text-orange-500 rounded-3xl" style={{alignItems:'center',fontWeight:'800'}}>Shop Now</a>
+<a href="https://runner-jet.vercel.app/" className="h-10 w-28 flex justify-center bg-white text-orange-500 rounded-3xl" style={{alignItems:'center',fontWeight:'800'}}>Play Game</a>
   
   <div className="flex flex-col gap-6 ">
 
@@ -464,101 +465,243 @@ if (audioRef.current) {
 
 
     {/* ================= INPUT SECTION ================= */}
-    <div className="bg-gray-850 px-10 py-6 flex flex-col gap-4 z-50" style={{position:'fixed',bottom:'50px',width:'100%'}}>
 
-      {showShowcase&&<div >
-  <LaptopsShowcase/>
-</div>}
+<div
+  style={{
+    position: "fixed",
+    bottom: "50px",
+    width: "100%",
+    zIndex: 50,
+    fontFamily: "'Rajdhani', sans-serif",
+  }}
+>
+  {showShowcase && (
+    <div>
+      <LaptopsShowcase />
+    </div>
+  )}
 
-      {/* Input Row */}
-      <div className="flex items-center gap-6">
+  {/* Glass Panel */}
+  <div
+    style={{
+      padding: "24px 24px",
+      background: "rgba(9,9,11,0.82)",
+      backdropFilter: "blur(20px)",
+      borderTop: "1px solid rgba(249,115,22,0.18)",
+      boxShadow: "0 -8px 40px rgba(0,0,0,0.55)",marginBottom:'20px'
+    }}
+  >
+    {/* Top orange gradient rule */}
+    <div
+      style={{
+        height: "2px",
+        marginBottom: "14px",
+        background:
+          "linear-gradient(90deg, transparent, rgba(249,115,22,0.65) 30%, rgba(249,115,22,0.65) 70%, transparent)",
+        borderRadius: "2px",
+      }}
+    />
 
-        {/* Text Input */}
+    {/* Input Row */}
+    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+
+      {/* Text Input wrapper */}
+      <div style={{ flex: 1, position: "relative" }}>
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           type="text"
           placeholder={
             loading
-              ? "Thinking..."
+              ? "Thinking…"
               : talking
-              ? "Talking..."
-              : "Type your question"
+              ? "Talking…"
+              : "Ask anything about the showroom…"
           }
           disabled={loading || talking}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !loading && !talking)
-              handleAsk(question);
+            if (e.key === "Enter" && !loading && !talking) handleAsk(question);
           }}
-          className="flex-1 px-6 py-5 text-xl rounded-2xl bg-gray-700/50 focus:outline-none focus:ring-4 focus:ring-orange-500"
+          style={{
+            width: "100%",
+            padding: "14px 52px 14px 20px",
+            fontSize: "16px",
+            fontFamily: "'Rajdhani', sans-serif",
+            fontWeight: 500,
+            letterSpacing: "0.3px",
+            color: "#f1f5f9",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "14px",
+            outline: "none",
+            boxSizing: "border-box",
+            caretColor: "#f97316",
+            transition: "border-color 0.2s, box-shadow 0.2s",
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "rgba(249,115,22,0.6)";
+            e.target.style.boxShadow = "0 0 0 3px rgba(249,115,22,0.15)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "rgba(255,255,255,0.1)";
+            e.target.style.boxShadow = "none";
+          }}
         />
-
-        {/* Ask Button */}
+        {/* Send icon inside input */}
         <button
-          onClick={() => handleAsk(question)}
+          onClick={() => !loading && !talking && handleAsk(question)}
           disabled={loading || talking}
-          className="px-8 py-5 text-xl bg-orange-500 rounded-2xl font-semibold hover:bg-orange-600 transition disabled:bg-gray-600"
+          style={{
+            position: "absolute",
+            right: "12px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            background: "none",
+            border: "none",
+            padding: "4px",
+            cursor: loading || talking ? "not-allowed" : "pointer",
+            color: question.trim() ? "#f97316" : "rgba(255,255,255,0.25)",
+            display: "flex",
+            alignItems: "center",
+            transition: "color 0.2s",
+          }}
         >
-          Ask
+          <Send size={18} strokeWidth={2} />
         </button>
-
-        {/* BIG Mic Button */}
-        <div className=" p-6 rounded-full shadow-xl hover:scale-105 transition">
-          <SpeechToText
-            talking={talking}
-            language={language}
-            setQuestion={setQuestion}
-            handleAsk={handleAsk}
-            isListening={isListening}
-            setIsListening={setIsListening}
-          />
-        </div>
       </div>
 
-      {/* ================= SUBTITLES ================= */}
+      {/* Ask Button */}
+      <button
+        onClick={() => handleAsk(question)}
+        disabled={loading || talking}
+        style={{
+          padding: "14px 28px",
+          fontSize: "15px",
+          fontFamily: "'Rajdhani', sans-serif",
+          fontWeight: 700,
+          letterSpacing: "1.5px",
+          textTransform: "uppercase",
+          color: "#fff",
+          background:
+            loading || talking
+              ? "rgba(255,255,255,0.08)"
+              : "linear-gradient(135deg, #f97316, #ea580c)",
+          border: "none",
+          borderRadius: "14px",
+          cursor: loading || talking ? "not-allowed" : "pointer",
+          boxShadow:
+            loading || talking ? "none" : "0 4px 20px rgba(249,115,22,0.4)",
+          whiteSpace: "nowrap",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          if (!loading && !talking) {
+            e.currentTarget.style.transform = "translateY(-1px)";
+            e.currentTarget.style.boxShadow = "0 6px 28px rgba(249,115,22,0.55)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 4px 20px rgba(249,115,22,0.4)";
+        }}
+      >
+        {loading ? "…" : talking ? "Wait" : "Ask"}
+      </button>
 
- {subtitle && subtitle.length > 0 && !loading && <div className="fixed top-120 left-8 z-100 animate-calloutIn" style={{maxWidth:'350px'}}>
+      {/* BIG Mic Button */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "50px",
+          height: "50px",
+          marginLeft:'20px',marginRight:'20px',
+          borderRadius: "50%",
+          background: isListening
+            ? "linear-gradient(135deg, #f97316, #dc2626)"
+            : "rgba(249,115,22,0.12)",
+          border: isListening
+            ? "2px solid rgba(249,115,22,0.9)"
+            : "2px solid rgba(249,115,22,0.3)",
+          boxShadow: isListening
+            ? "0 0 0 6px rgba(249,115,22,0.15), 0 0 20px rgba(249,115,22,0.4)"
+            : "none",
+          flexShrink: 0,
+          transition: "all 0.25s ease",
+        }}
+      >
+        <SpeechToText
+          talking={talking}
+          language={language}
+          setQuestion={setQuestion}
+          handleAsk={handleAsk}
+          isListening={isListening}
+          setIsListening={setIsListening}
+        />
+      </div>
+    </div>
 
-  {/* Outer Glow */}
-  <div className="absolute inset-0 rounded-2xl bg-orange-500/20 blur-2xl"></div>
-
-  {/* Main Bubble */}
-  <div className="
-    relative
-    bg-gradient-to-br from-orange-400/80 to-orange-600/80
-    text-white
-    text-sm
-    px-5 py-3
-    rounded-2xl
-    shadow-[0_0_30px_rgba(255,140,0,0.8)]
-    border border-orange-400/40
-    z-20
-  ">
-
-    <ReactMarkdown>
-      {subtitle.length > 0 ? displaySubtitle : " "}
-    </ReactMarkdown>
-
-    {/* Talking Tail Circles */}
-   {/* Talking Tail */}
-
-
-
+    {/* Error */}
+    {error && (
+      <p
+        style={{
+          marginTop: "10px",
+          color: "#f87171",
+          fontSize: "13px",
+          fontWeight: 500,
+          letterSpacing: "0.2px",
+        }}
+      >
+        {error}
+      </p>
+    )}
   </div>
-</div>}
 
-
-      {/* old subs */}
-      {/* <div className="min-h-[70px] text-sm bg-black/40 p-4 rounded-xl">
+  {/* ================= SUBTITLES ================= */}
+  {subtitle && subtitle.length > 0 && !loading && (
+    <div
+      className="fixed z-10 animate-calloutIn"
+      style={{ top: "480px", left: "32px", maxWidth: "360px" }}
+    >
+      {/* Outer Glow */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "18px",
+          background: "rgba(249,115,22,0.22)",
+          filter: "blur(22px)",
+        }}
+      />
+      {/* Main Bubble */}
+      <div
+        style={{
+          position: "relative",
+          background:
+            "linear-gradient(135deg, rgba(249,115,22,0.82), rgba(194,65,12,0.88))",
+          color: "#fff",
+          fontSize: "13px",
+          lineHeight: 1.55,
+          padding: "12px 18px",
+          borderRadius: "18px",
+          border: "1px solid rgba(251,146,60,0.4)",
+          boxShadow:
+            "0 0 32px rgba(249,115,22,0.5), 0 4px 16px rgba(0,0,0,0.5)",
+          zIndex: 20,
+        }}
+      >
         <ReactMarkdown>
           {subtitle.length > 0 ? displaySubtitle : " "}
         </ReactMarkdown>
-      </div> */}
-
-      {error && (
-        <p className="text-red-400 text-lg">{error}</p>
-      )}
+      </div>
     </div>
+  )}
+
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+  `}</style>
+</div>
 
 
     {/* ================= CONTROL PANEL (LEFT FLOATING) ================= */}
