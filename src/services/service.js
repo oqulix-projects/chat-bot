@@ -4,7 +4,7 @@
 
 import { auth } from "../../firebaseConfig";
 
-const API_BASE = "https://oqulix-chat-server.onrender.com" //process.env.REACT_APP_API_URL ?? '';
+const API_BASE = "http://localhost:4000" //process.env.REACT_APP_API_URL ?? '';
 
 export async function uploadFile(file) {
   const form = new FormData();
@@ -27,9 +27,11 @@ export async function uploadFile(file) {
 
 
 export async function askQuestion(question, userId, language, previousAnswer) {
+  console.log("yes its from here");
+  
   const payload = { question, userId, language, previousAnswer };
 
-  const res = await fetch(`${API_BASE}/ask`, {
+  const res = await fetch(`${API_BASE}/askClaude`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

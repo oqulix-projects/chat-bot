@@ -13,7 +13,7 @@ import WaveDetector from "./WaveDetector";
 import FAQ from "./FAQ";
 import LaptopsShowcase from "./LaptopsShowcase";
 import Oq from "./Oq";
-import { Send } from "lucide-react";
+import { Send, X } from "lucide-react";
 
 
 // 🌟 OPTIMIZATION 1: Move constants OUTSIDE the component to ensure stability (never re-created)
@@ -104,7 +104,17 @@ const Homepage = () => {
 
 const audioRef = useRef(null);
 
+const stopTalking=()=>{
+if (audioRef.current) {
+  audioRef.current.pause();
+  audioRef.current.currentTime = 0;
+  audioRef.current = null;
+  setTalking(false);
+}
+}
+
 const handleAsk = async (questionToAsk) => {
+  setSubtitle("")
 
   // 🔴 Force stop any ongoing speech immediately
 if (audioRef.current) {
@@ -147,21 +157,17 @@ if (audioRef.current) {
       );
     }
 
-    async function playTTS(text) {
+async function playTTS(text) {
   console.log("GCP service playing TTS");
 
   const cleanedText = cleanText(text);
-  console.log("Cleaned text:", cleanedText);
 
   try {
-    // 🔴 STOP any currently playing audio
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
-
-    setTalking(true);
 
     let voiceName;
     let languageCode;
@@ -206,9 +212,13 @@ if (audioRef.current) {
     const url = URL.createObjectURL(blob);
 
     const audio = new Audio(url);
-    audioRef.current = audio; // 🔵 store reference
+    audioRef.current = audio;
 
-    audio.onplay = () => setTalking(true);
+    // ✅ Animation starts EXACTLY when audio starts
+    audio.onplay = () => {
+      setTalking(true);
+      setChat((p) => [...p, { role: "assistant", text: text }]);
+    };
 
     audio.onended = () => {
       setTalking(false);
@@ -238,9 +248,9 @@ if (audioRef.current) {
       // expected: { question, answer, userId }
 
       const answer = resp?.answer ?? "No answer from server";
-
-      setChat((p) => [...p, { role: "assistant", text: answer }]);
       playTTS(answer);
+      
+      
       setQuestion("");
     } catch (err) {
       setError(err.message || "Error getting answer");
@@ -248,6 +258,10 @@ if (audioRef.current) {
       setLoading(false);
     }
   };
+
+
+
+  
   function logoutUser() {
     const auth = getAuth();
     return signOut(auth)
@@ -390,16 +404,9 @@ if (audioRef.current) {
         onChange={handleCheckboxChange}
         className="w-5 h-5 accent-orange-500"
       />
-    </label>
-
-    <label className="flex items-center justify-between gap-3 text-lg">
-      <span>Camera</span>
-      <input
-        type="checkbox"
-        onChange={handleCameraCheckboxChange}
-        className="w-5 h-5 accent-orange-500"
-      />
     </label> */}
+
+    
 
     <select
       onChange={(e) => setlanguage(e.target.value)}
@@ -412,6 +419,14 @@ if (audioRef.current) {
     </select>
 
   </div>
+  <label className="flex items-center justify-between gap-3 text-lg">
+      <span>Camera</span>
+      <input
+        type="checkbox"
+        onChange={handleCameraCheckboxChange}
+        className="w-5 h-5 accent-orange-500"
+      />
+    </label>
 
 </div>
       {/* <button
@@ -475,6 +490,12 @@ if (audioRef.current) {
     fontFamily: "'Rajdhani', sans-serif",
   }}
 >
+
+  {talking&&<div className="flex justify-center animate-calloutIn animate-calloutIn" style={{marginBottom:'120px'}}>
+    <button onClick={stopTalking} className=" bg-red-600 p-10 text-2xl rounded-4xl flex gap-1 items-center" ><X/> Stop talking</button>
+  </div>}
+
+
   {showShowcase && (
     <div>
       <LaptopsShowcase />
@@ -501,6 +522,8 @@ if (audioRef.current) {
         borderRadius: "2px",
       }}
     />
+
+    
 
     {/* Input Row */}
     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -609,15 +632,36 @@ if (audioRef.current) {
       </button>
 
       {/* BIG Mic Button */}
-      <div
+      
+    </div>
+
+    {/* Error */}
+    {error && (
+      <p
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "50px",
-          height: "50px",
+          marginTop: "10px",
+          color: "#f87171",
+          fontSize: "13px",
+          fontWeight: 500,
+          letterSpacing: "0.2px",
+        }}
+      >
+        {error}
+      </p>
+    )}
+  </div>
+
+  <div
+        style={{
+          position:'fixed',
+          top:'550px',
+          right:'70px',
+          width: "170px",
+          height: "170px",
           marginLeft:'20px',marginRight:'20px',
           borderRadius: "50%",
+          display:'flex',
+          justifyContent:'center',alignItems:'center',
           background: isListening
             ? "linear-gradient(135deg, #f97316, #dc2626)"
             : "rgba(249,115,22,0.12)",
@@ -640,23 +684,6 @@ if (audioRef.current) {
           setIsListening={setIsListening}
         />
       </div>
-    </div>
-
-    {/* Error */}
-    {error && (
-      <p
-        style={{
-          marginTop: "10px",
-          color: "#f87171",
-          fontSize: "13px",
-          fontWeight: 500,
-          letterSpacing: "0.2px",
-        }}
-      >
-        {error}
-      </p>
-    )}
-  </div>
 
   {/* ================= SUBTITLES ================= */}
   {subtitle && subtitle.length > 0 && !loading && (

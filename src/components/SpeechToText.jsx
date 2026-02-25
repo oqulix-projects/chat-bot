@@ -217,7 +217,7 @@ const SpeechToText = ({
     onClick={handleButtonClick}
     disabled={talking || isListening}
     className={`
-      relative w-20 h-20 rounded-full
+      relative w-30 h-30 rounded-full
       flex flex-col items-center justify-center
       text-white font-semibold
       transition-all duration-200
@@ -225,7 +225,7 @@ const SpeechToText = ({
       shadow-xl
       ${recording
         ? "bg-gradient-to-br from-orange-500 to-pink-600 animate-pulse"
-        : "bg-gradient-to-br from-blue-600 to-cyan-400 hover:scale-105"}
+        : "bg-gradient-to-br from-orange-600 to-orange-400 hover:scale-105"}
       ${(talking || isListening) ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
     `}
   >

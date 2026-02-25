@@ -6,37 +6,35 @@ import * as mpCameraUtils from "@mediapipe/camera_utils";
 
 export default function WaveDetector({ onWaveDetected, talking, isListening }) {
   const videoRef = useRef(null);
-
   const cameraRef = useRef(null);
-
   const handsRef = useRef(null);
+
+  // ✅ Mutable refs for props that change — avoids stale closures WITHOUT re-running the effect
+  const talkingRef = useRef(talking);
+  const isListeningRef = useRef(isListening);
+  const onWaveDetectedRef = useRef(onWaveDetected);
+
+  // Keep refs in sync with latest props on every render (no effect needed)
+  talkingRef.current = talking;
+  isListeningRef.current = isListening;
+  onWaveDetectedRef.current = onWaveDetected;
 
   useEffect(() => {
     if (!videoRef.current) return;
 
     // ======= Config =======
-
-    const threshold = 0.05; // min x movement to count
-
-    const requiredFlips = 2; // direction changes = wave
-
-    const windowMs = 800;
-    // time window for flips
-
-    const cooldownMs = 6000; // 6 seconds cooldown after a wave
+    const threshold = 0.05;   // min x movement to count
+    const requiredFlips = 2;  // direction changes = wave
+    const windowMs = 800;     // time window for flips
+    const cooldownMs = 6000;  // 6 seconds cooldown after a wave
 
     let lastX = null;
-
     let lastDir = 0;
-
     let flips = 0;
-
     let flipTimestamps = [];
-
-    let lastTrigger = 0; // Tracks the last time we successfully called onWaveDetected
+    let lastTrigger = 0;
 
     // ======= Initialize MediaPipe Hands =======
-
     const hands = new mpHands.Hands({
       locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
@@ -46,28 +44,22 @@ export default function WaveDetector({ onWaveDetected, talking, isListening }) {
 
     hands.setOptions({
       maxNumHands: 1,
-
       modelComplexity: 0,
-
       minDetectionConfidence: 0.6,
-
       minTrackingConfidence: 0.5,
     });
 
     hands.onResults((results) => {
       const now = performance.now();
 
-      // 🛑 FIX 1: Prevent detection if the bot is currently busy (talking or listening)
-      if (talking || isListening) {
-        // Optionally reset internal wave state while busy to prevent immediate trigger when status changes
+      // ✅ Read from refs instead of closed-over props — always current, no re-init needed
+      if (talkingRef.current || isListeningRef.current) {
         lastX = null;
         lastDir = 0;
         flips = 0;
         flipTimestamps = [];
         return;
       }
-
-      // 🛑 FIX 2: IMMEDIATELY RETURN if within the cooldown window (6 seconds)
 
       if (now - lastTrigger < cooldownMs) return;
 
@@ -75,21 +67,14 @@ export default function WaveDetector({ onWaveDetected, talking, isListening }) {
         !results.multiHandLandmarks ||
         results.multiHandLandmarks.length === 0
       ) {
-        // Reset state when hand is not visible
-
         lastX = null;
-
         lastDir = 0;
-
         flips = 0;
-
         flipTimestamps = [];
-
         return;
       }
 
       const lm = results.multiHandLandmarks[0][8]; // index fingertip
-
       const x = lm.x;
 
       if (lastX !== null) {
@@ -100,28 +85,16 @@ export default function WaveDetector({ onWaveDetected, talking, isListening }) {
 
           if (lastDir !== 0 && dir !== lastDir) {
             flips += 1;
-
             flipTimestamps.push(now);
-
             flipTimestamps = flipTimestamps.filter((t) => now - t <= windowMs);
-
             flips = flipTimestamps.length;
 
             if (flips >= requiredFlips) {
-              // Trigger wave (no need for an inner if/else now, since we checked at the top)
-
-              onWaveDetected();
-
-              lastTrigger = now; // Set cooldown timestamp
-
+              onWaveDetectedRef.current(); // ✅ Always calls the latest callback
+              lastTrigger = now;
               flips = 0;
-
               flipTimestamps = [];
-
-              lastDir = 0; // Reset last direction
-
-              // 🛑 CRITICAL: We stop processing this frame immediately after a trigger
-
+              lastDir = 0;
               return;
             }
 
@@ -137,13 +110,10 @@ export default function WaveDetector({ onWaveDetected, talking, isListening }) {
       lastX = x;
     });
 
-    // ======= Initialize webcam (unchanged) =======
-
+    // ======= Initialize webcam =======
     const camera = new mpCameraUtils.Camera(videoRef.current, {
       onFrame: async () => await hands.send({ image: videoRef.current }),
-
       width: 320,
-
       height: 240,
     });
 
@@ -151,50 +121,40 @@ export default function WaveDetector({ onWaveDetected, talking, isListening }) {
 
     navigator.mediaDevices
       .getUserMedia({ video: true })
-
       .then((stream) => {
         const videoEl = videoRef.current;
-
         if (!videoEl) return;
 
         videoEl.srcObject = stream;
-
         videoEl.onloadedmetadata = () => {
           videoEl.play().catch((err) => {
             if (err.name !== "AbortError")
               console.error("Video play error:", err);
           });
-
           camera.start();
         };
       })
-
       .catch((err) => console.error("Camera error:", err));
 
-    // ======= Cleanup (unchanged) =======
-
+    // ======= Cleanup =======
     return () => {
       cameraRef.current?.stop();
-
       handsRef.current?.close();
-
       if (videoRef.current?.srcObject) {
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
       }
     };
-  }, [onWaveDetected, talking, isListening]); // Added talking and isListening to dependencies
+  }, []); // ✅ Empty deps — runs ONCE. Props are accessed via refs above.
 
   return (
     <div>
       <video
         ref={videoRef}
-        // style={{ display: "none" }}
+        style={{ display: "none" }}
         playsInline
         muted
         autoPlay
       />
-
-      <p style={{ color: "white" }}></p>
     </div>
   );
 }
