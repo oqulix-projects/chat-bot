@@ -97,9 +97,8 @@ if (audioRef.current) {
 const subtitleRef = useRef("");
 
 const handleAsk = async (questionToAsk) => {
-  setLoading(true)
-  setSubtitle(""); // ✅ Keep this for rendering condition
-  subtitleRef.current = ""; // Also clear ref
+  setSubtitle("")
+  setLoading(true);
 
   if (audioRef.current) {
     audioRef.current.pause();
@@ -195,31 +194,42 @@ const handleAsk = async (questionToAsk) => {
 
       audio.onplay = () => {
         setTalking(true);
-        // ✅ Update state to show div + update ref for content
         setSubtitle(text);
-        subtitleRef.current = text;
       };
 
       audio.onended = () => {
+        console.log("✅ Audio ended, queue length:", ttsQueue.length);
+        
         if (ttsQueue.length > 0) {
           const nextSentence = ttsQueue.shift();
           playTTSSentence(nextSentence);
         } else {
+          // ✅ STOP TALKING WHEN QUEUE IS EMPTY
+          console.log("🛑 No more sentences in queue. Stopping...");
           setTalking(false);
           setIsListening(true);
           audioRef.current = null;
           setLoading(false);
-          // ✅ Show full text
           setSubtitle(fullText);
-          subtitleRef.current = fullText;
         }
       };
 
-      audio.onerror = () => {
-        console.error("Audio error");
+      audio.onerror = (error) => {
+        console.error("Audio error:", error);
         setTalking(false);
         audioRef.current = null;
       };
+
+      // ✅ Add timeout to prevent infinite talking
+      const timeoutId = setTimeout(() => {
+        console.warn("⚠️ Audio timeout - forcing stop");
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        setTalking(false);
+      }, 120000); // 2 minutes max
+
+      audio.addEventListener('ended', () => clearTimeout(timeoutId), { once: true });
 
       await audio.play();
     } catch (err) {
@@ -228,23 +238,21 @@ const handleAsk = async (questionToAsk) => {
     }
   }
 
-  // ✅ HANDLE CHUNKS - BUFFER INTO SENTENCES
   const handleChunk = (chunk) => {
     sentenceBuffer += chunk;
     fullText += chunk;
     
     console.log("📝 Buffer:", sentenceBuffer);
     
-    // ✅ Update state ONCE so div renders, then use ref for actual content
+    if (subtitleRef.current !== undefined) {
+      subtitleRef.current = fullText;
+    }
+
     if (!hasReceivedFirstChunk) {
-      setSubtitle(fullText); // Trigger render
       hasReceivedFirstChunk = true;
       setLoading(false);
       console.log("✅ First chunk received! Loading stopped.");
     }
-    
-    // Update ref for immediate DOM updates without re-render
-    subtitleRef.current = fullText;
 
     const sentenceRegex = /[.!?]+|\n/g;
     let match;
@@ -293,12 +301,12 @@ const handleAsk = async (questionToAsk) => {
     
     setQuestion("");
   } catch (err) {
+    console.error("Error:", err);
     setError(err.message || "Error getting answer");
     setTalking(false);
     setLoading(false);
   }
 };
-
   
   function logoutUser() {
     const auth = getAuth();
@@ -424,6 +432,7 @@ const handleAsk = async (questionToAsk) => {
         <h1 className="text-3xl font-bold tracking-wide">
           Assistant
         </h1>
+        <span style={{fontSize:'10px'}} className="text-orange-300">V.3.0.1</span>
       </div>
 
 <div className="flex" style={{justifyContent:'right',gap:'30px'}}> 
