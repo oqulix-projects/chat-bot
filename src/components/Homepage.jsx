@@ -67,26 +67,7 @@ const Homepage = () => {
   const [showShowcase,setShowShowcase]=useState(false)
 
   const [isListening, setIsListening] = useState(false);
-
-  useEffect(() => {
-    if (!subtitle) {
-      setDisplaySubtitle("");
-      return;
-    }
-
-    setDisplaySubtitle(""); // reset before typing
-    let index = 0;
-
-    const interval = setInterval(() => {
-      index++;
-      setDisplaySubtitle(subtitle.slice(0, index));
-      if (index >= subtitle.length) {
-        clearInterval(interval);
-      }
-    }, 20); 
-
-    return () => clearInterval(interval);
-  }, [subtitle]);
+console.log(loading)
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -96,11 +77,11 @@ const Homepage = () => {
     }
   });
 
-  useEffect(() => {
-    chat.length > 0 &&
-      chat[chat.length - 1].role == "assistant" &&
-      setSubtitle(chat[chat.length - 1].text);
-  }, [chat]);
+  // useEffect(() => {
+  //   chat.length > 0 &&
+  //     chat[chat.length - 1].role == "assistant" &&
+  //     setSubtitle(chat[chat.length - 1].text);
+  // }, [chat]);
 
 const audioRef = useRef(null);
 
@@ -113,153 +94,210 @@ if (audioRef.current) {
 }
 }
 
+const subtitleRef = useRef("");
+
 const handleAsk = async (questionToAsk) => {
-  setSubtitle("")
+  setLoading(true)
+  setSubtitle(""); // ✅ Keep this for rendering condition
+  subtitleRef.current = ""; // Also clear ref
 
-  // 🔴 Force stop any ongoing speech immediately
-if (audioRef.current) {
-  audioRef.current.pause();
-  audioRef.current.currentTime = 0;
-  audioRef.current = null;
-  setTalking(false);
-}
-
-    console.log("asking");
-    console.log(questionToAsk);
-
-    setError(null);
-    if (!questionToAsk.trim()) {
-      setError("Please type your question");
-      return;
-    }
-
-    function cleanText(text) {
-      return (
-        text
-          // remove bold/italics markers
-          .replace(/\*\*(.*?)\*\*/g, "$1")
-          .replace(/\*(.*?)\*/g, "$1")
-          // remove headings like ### Heading
-          .replace(/#+\s/g, "")
-          // remove inline code
-          .replace(/`{1,3}(.*?)`{1,3}/g, "$1")
-          // remove links but keep text
-          .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-          // remove emojis (all unicode emoji ranges)
-          .replace(/[\u{1F600}-\u{1F64F}]/gu, "") 
-          .replace(/[\u{1F300}-\u{1F5FF}]/gu, "") 
-          .replace(/[\u{1F680}-\u{1F6FF}]/gu, "") 
-          .replace(/[\u{2600}-\u{26FF}]/gu, "") 
-          .replace(/[\u{2700}-\u{27BF}]/gu, "") 
-          // trim extra spaces
-          .replace(/\s{2,}/g, " ")
-          .trim()
-      );
-    }
-
-async function playTTS(text) {
-  console.log("GCP service playing TTS");
-
-  const cleanedText = cleanText(text);
-
-  try {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current = null;
-    }
-
-    let voiceName;
-    let languageCode;
-
-    switch (language.toLowerCase()) {
-      case "malayalam":
-        languageCode = "ml-IN";
-        voiceName = "ml-IN-Wavenet-A";
-        break;
-      case "hindi":
-        languageCode = "hi-IN";
-        voiceName = "hi-IN-Wavenet-A";
-        break;
-      case "arabic":
-        languageCode = "ar-XA";
-        voiceName = "ar-XA-Chirp3-HD-Achernar";
-        break;
-      case "english":
-      default:
-        languageCode = "en-US";
-        voiceName = "en-US-Wavenet-F";
-        break;
-    }
-
-    const resp = await fetch(
-      "https://oqulix-chat-server.onrender.com/speak",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: cleanedText,
-          languageCode,
-          voiceName,
-        }),
-      }
-    );
-
-    if (!resp.ok) throw new Error("TTS request failed");
-
-    const buf = await resp.arrayBuffer();
-    const blob = new Blob([buf], { type: "audio/mpeg" });
-    const url = URL.createObjectURL(blob);
-
-    const audio = new Audio(url);
-    audioRef.current = audio;
-
-    // ✅ Animation starts EXACTLY when audio starts
-    audio.onplay = () => {
-      setTalking(true);
-      setChat((p) => [...p, { role: "assistant", text: text }]);
-    };
-
-    audio.onended = () => {
-      setTalking(false);
-      setIsListening(true);
-      audioRef.current = null;
-    };
-
-    audio.onerror = () => {
-      setTalking(false);
-      audioRef.current = null;
-    };
-
-    await audio.play();
-  } catch (err) {
-    console.error("Error in playTTS:", err);
+  if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    audioRef.current = null;
     setTalking(false);
   }
-}
 
-    // add user message to chat
-    setChat((p) => [...p, { role: "user", text: questionToAsk }]);
-    setLoading(true);
+  console.log("asking");
+  console.log(questionToAsk);
+
+  setError(null);
+  if (!questionToAsk.trim()) {
+    setError("Please type your question");
+    return;
+  }
+
+  function cleanText(text) {
+    return (
+      text
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/#+\s/g, "")
+        .replace(/`{1,3}(.*?)`{1,3}/g, "$1")
+        .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+        .replace(/[\u{1F600}-\u{1F64F}]/gu, "") 
+        .replace(/[\u{1F300}-\u{1F5FF}]/gu, "") 
+        .replace(/[\u{1F680}-\u{1F6FF}]/gu, "") 
+        .replace(/[\u{2600}-\u{26FF}]/gu, "") 
+        .replace(/[\u{2700}-\u{27BF}]/gu, "") 
+        .replace(/\s{2,}/g, " ")
+        .trim()
+    );
+  }
+
+  let sentenceBuffer = "";
+  let fullText = "";
+  let ttsQueue = [];
+  let isPlayingTTS = false;
+  let hasReceivedFirstChunk = false;
+
+  async function playTTSSentence(text) {
+    console.log("🔊 Playing sentence:", text);
+
+    const cleanedText = cleanText(text);
+    if (!cleanedText || cleanedText.length < 5) return;
+
     try {
-      console.log(language);
+      let voiceName;
+      let languageCode;
 
-      const resp = await askQuestion(questionToAsk, token, language, subtitle);
-      // expected: { question, answer, userId }
+      switch (language.toLowerCase()) {
+        case "malayalam":
+          languageCode = "ml-IN";
+          voiceName = "ml-IN-Wavenet-A";
+          break;
+        case "hindi":
+          languageCode = "hi-IN";
+          voiceName = "hi-IN-Wavenet-A";
+          break;
+        case "arabic":
+          languageCode = "ar-XA";
+          voiceName = "ar-XA-Chirp3-HD-Achernar";
+          break;
+        case "english":
+        default:
+          languageCode = "en-US";
+          voiceName = "en-US-Wavenet-F";
+          break;
+      }
 
-      const answer = resp?.answer ?? "No answer from server";
-      playTTS(answer);
-      
-      
-      setQuestion("");
+      const resp = await fetch(
+        "https://oqulix-chat-server.onrender.com/speak",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: cleanedText,
+            languageCode,
+            voiceName,
+          }),
+        }
+      );
+
+      if (!resp.ok) throw new Error("TTS request failed");
+
+      const buf = await resp.arrayBuffer();
+      const blob = new Blob([buf], { type: "audio/mpeg" });
+      const url = URL.createObjectURL(blob);
+
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onplay = () => {
+        setTalking(true);
+        // ✅ Update state to show div + update ref for content
+        setSubtitle(text);
+        subtitleRef.current = text;
+      };
+
+      audio.onended = () => {
+        if (ttsQueue.length > 0) {
+          const nextSentence = ttsQueue.shift();
+          playTTSSentence(nextSentence);
+        } else {
+          setTalking(false);
+          setIsListening(true);
+          audioRef.current = null;
+          setLoading(false);
+          // ✅ Show full text
+          setSubtitle(fullText);
+          subtitleRef.current = fullText;
+        }
+      };
+
+      audio.onerror = () => {
+        console.error("Audio error");
+        setTalking(false);
+        audioRef.current = null;
+      };
+
+      await audio.play();
     } catch (err) {
-      setError(err.message || "Error getting answer");
-    } finally {
-      setLoading(false);
+      console.error("Error in playTTS:", err);
+      setTalking(false);
     }
+  }
+
+  // ✅ HANDLE CHUNKS - BUFFER INTO SENTENCES
+  const handleChunk = (chunk) => {
+    sentenceBuffer += chunk;
+    fullText += chunk;
+    
+    console.log("📝 Buffer:", sentenceBuffer);
+    
+    // ✅ Update state ONCE so div renders, then use ref for actual content
+    if (!hasReceivedFirstChunk) {
+      setSubtitle(fullText); // Trigger render
+      hasReceivedFirstChunk = true;
+      setLoading(false);
+      console.log("✅ First chunk received! Loading stopped.");
+    }
+    
+    // Update ref for immediate DOM updates without re-render
+    subtitleRef.current = fullText;
+
+    const sentenceRegex = /[.!?]+|\n/g;
+    let match;
+    let lastIndex = 0;
+
+    while ((match = sentenceRegex.exec(sentenceBuffer)) !== null) {
+      const sentence = sentenceBuffer.substring(lastIndex, match.index + match[0].length).trim();
+      
+      if (sentence) {
+        console.log("✅ Complete sentence:", sentence);
+        ttsQueue.push(sentence);
+
+        if (!isPlayingTTS) {
+          isPlayingTTS = true;
+          const firstSentence = ttsQueue.shift();
+          playTTSSentence(firstSentence);
+        }
+      }
+      
+      lastIndex = match.index + match[0].length;
+    }
+
+    sentenceBuffer = sentenceBuffer.substring(lastIndex);
   };
 
+  setChat((p) => [...p, { role: "user", text: questionToAsk }]);
 
+  try {
+    console.log(language);
+
+    const resp = await askQuestion(questionToAsk, token, language, subtitle, handleChunk);
+    const answer = resp?.answer ?? "No answer from server";
+
+    if (sentenceBuffer.trim()) {
+      console.log("✅ Final sentence:", sentenceBuffer);
+      ttsQueue.push(sentenceBuffer);
+      
+      if (!isPlayingTTS) {
+        isPlayingTTS = true;
+        const firstSentence = ttsQueue.shift();
+        playTTSSentence(firstSentence);
+      }
+    }
+
+    setChat((p) => [...p, { role: "assistant", text: answer }]);
+    
+    setQuestion("");
+  } catch (err) {
+    setError(err.message || "Error getting answer");
+    setTalking(false);
+    setLoading(false);
+  }
+};
 
   
   function logoutUser() {
@@ -491,10 +529,49 @@ async function playTTS(text) {
   }}
 >
 
-  {talking&&<div className="flex justify-center animate-calloutIn animate-calloutIn" style={{marginBottom:'120px'}}>
-    <button onClick={stopTalking} className=" bg-red-600 p-10 text-2xl rounded-4xl flex gap-1 items-center" ><X/> Stop talking</button>
-  </div>}
+{talking && (
+  <div 
+    className="fixed z-50 animate-calloutIn"
+    style={{ 
+      bottom: "280px",
+      left: "50%",
+      transform: "translateX(-50%)"
+    }}
+  >
+    <button 
+      onClick={stopTalking} 
+      className="relative px-10 py-5 rounded-2xl font-bold text-white text-xl
+        bg-gradient-to-br from-red-600 to-red-900
+        border-2 border-red-500/70
+        shadow-[0_0_50px_rgba(220,38,38,0.8),inset_0_1px_0_rgba(255,255,255,0.2)]
+        hover:shadow-[0_0_60px_rgba(220,38,38,1)]
+        transition-all duration-300
+        flex items-center gap-3
+        hover:scale-110
+        active:scale-95
+        backdrop-blur-sm"
+      style={{
+        animation: "pulse 1.5s ease-in-out infinite"
+      }}
+    >
+      <X size={28} strokeWidth={3} className="animate-pulse" />
+      <span>STOP</span>
+    </button>
 
+    <style>{`
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 0 50px rgba(220,38,38,0.8), inset 0 1px 0 rgba(255,255,255,0.2);
+          transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 70px rgba(220,38,38,1), inset 0 1px 0 rgba(255,255,255,0.3);
+          transform: scale(1.02);
+        }
+      }
+    `}</style>
+  </div>
+)}
 
   {showShowcase && (
     <div>
@@ -686,44 +763,121 @@ async function playTTS(text) {
       </div>
 
   {/* ================= SUBTITLES ================= */}
-  {subtitle && subtitle.length > 0 && !loading && (
+{subtitle && subtitle.length > 0 && !loading && (
+  <div
+    className="fixed z-10"
+    style={{ 
+      top: "480px", 
+      left: "32px", 
+      maxWidth: "360px",
+      animation: "slideInUp 0.5s ease-out forwards"
+    }}
+    data-subtitle="true"
+  >
+    {/* Outer Glow - Pulsing */}
     <div
-      className="fixed z-10 animate-calloutIn"
-      style={{ top: "480px", left: "32px", maxWidth: "360px" }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "18px",
+        background: "rgba(249,115,22,0.22)",
+        filter: "blur(22px)",
+        animation: "pulse 2s ease-in-out infinite"
+      }}
+    />
+    
+    {/* Main Bubble - Floating */}
+    <div
+      style={{
+        position: "relative",
+        background:
+          "linear-gradient(135deg, rgba(249,115,22,0.82), rgba(194,65,12,0.88))",
+        color: "#fff",
+        fontSize: "13px",
+        lineHeight: 1.55,
+        padding: "12px 18px",
+        borderRadius: "18px",
+        border: "1px solid rgba(251,146,60,0.4)",
+        boxShadow:
+          "0 0 32px rgba(249,115,22,0.5), 0 4px 16px rgba(0,0,0,0.5)",
+        zIndex: 20,
+        animation: "float 3s ease-in-out infinite",
+        backdropFilter: "blur(10px)",
+      }}
     >
-      {/* Outer Glow */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          borderRadius: "18px",
-          background: "rgba(249,115,22,0.22)",
-          filter: "blur(22px)",
-        }}
-      />
-      {/* Main Bubble */}
-      <div
-        style={{
-          position: "relative",
-          background:
-            "linear-gradient(135deg, rgba(249,115,22,0.82), rgba(194,65,12,0.88))",
-          color: "#fff",
-          fontSize: "13px",
-          lineHeight: 1.55,
-          padding: "12px 18px",
-          borderRadius: "18px",
-          border: "1px solid rgba(251,146,60,0.4)",
-          boxShadow:
-            "0 0 32px rgba(249,115,22,0.5), 0 4px 16px rgba(0,0,0,0.5)",
-          zIndex: 20,
-        }}
-      >
-        <ReactMarkdown>
-          {subtitle.length > 0 ? displaySubtitle : " "}
-        </ReactMarkdown>
-      </div>
+      {/* ✅ Use ReactMarkdown with ref */}
+      <ReactMarkdown>
+        {subtitleRef.current}
+      </ReactMarkdown>
     </div>
-  )}
+
+    {/* Animated border glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: "-2px",
+        borderRadius: "18px",
+        background: "linear-gradient(45deg, rgba(249,115,22,0.5), rgba(251,146,60,0.3), rgba(249,115,22,0.5))",
+        backgroundSize: "200% 200%",
+        animation: "gradientShift 3s ease infinite",
+        zIndex: -1,
+        opacity: 0.6
+      }}
+    />
+
+    <style>{`
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+
+      @keyframes gradientShift {
+        0% {
+          backgroundPosition: 0% 50%;
+        }
+        50% {
+          backgroundPosition: 100% 50%;
+        }
+        100% {
+          backgroundPosition: 0% 50%;
+        }
+      }
+
+      @keyframes typewriter {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+    `}</style>
+  </div>
+)}
 
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');

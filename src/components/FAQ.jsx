@@ -1,5 +1,5 @@
-import React from "react";
-import { WashingMachine, CreditCard, Smartphone, Tv, Apple, RefreshCw, Gamepad2, Volume2 } from "lucide-react";
+import React, { useState } from "react";
+import { WashingMachine, CreditCard, Smartphone, Tv, Apple, RefreshCw, Gamepad2, Volume2, MessageCircleQuestion, ChevronDown, ChevronUp } from "lucide-react";
 
 const showroomFAQs = [
   { id: 1, question: "Where are the large home appliances, like washing machines and refrigerators?", Icon: WashingMachine },
@@ -13,6 +13,8 @@ const showroomFAQs = [
 ];
 
 const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
   const handleQuestionClick = (questionText) => {
     handleAsk(questionText);
     questionText === "I need a gaming laptop. What brands and options do you have?"
@@ -35,15 +37,17 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
         zIndex: 30,
       }}
     >
-      {/* Header */}
+      {/* Header with toggle button */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          marginBottom: "12px",
+          marginBottom: isOpen ? "12px" : "0px",
           paddingLeft: "2px",
+          cursor: "pointer",
         }}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <div
           style={{
@@ -51,6 +55,7 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
             height: "20px",
             background: "linear-gradient(180deg, #f97316, #ea580c)",
             borderRadius: "2px",
+            flexShrink: 0,
           }}
         />
         <p
@@ -61,6 +66,7 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
             letterSpacing: "3px",
             textTransform: "uppercase",
             margin: 0,
+            userSelect: "none",
           }}
         >
           Quick Questions
@@ -73,68 +79,124 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
               "linear-gradient(90deg, rgba(249,115,22,0.4), transparent)",
           }}
         />
-      </div>
 
-      {/* Two-column grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "10px",
-          background: "rgba(0,0,0,0.55)",
-          backdropFilter: "blur(16px)",
-          borderRadius: "16px",
-          padding: "14px",
-          border: "1px solid rgba(249,115,22,0.15)",
-          boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.04) inset, 0 20px 60px rgba(0,0,0,0.6)",
-        }}
-      >
-        {/* Left column */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {leftFAQs.map((faq) => (
-            <FAQButton
-              key={faq.id}
-              faq={faq}
-              loading={loading}
-              onClick={handleQuestionClick}
-            />
-          ))}
-        </div>
-
-        {/* Right column with subtle divider */}
-        <div
+        {/* Toggle button */}
+        <button
+          className="faq-toggle-btn"
+          title={isOpen ? "Hide questions" : "Show questions"}
           style={{
-            position: "relative",
             display: "flex",
-            flexDirection: "column",
-            gap: "8px",
+            alignItems: "center",
+            gap: "5px",
+            background: isOpen
+              ? "rgba(249,115,22,0.15)"
+              : "rgba(249,115,22,0.25)",
+            border: "1px solid rgba(249,115,22,0.35)",
+            borderRadius: "8px",
+            padding: "4px 10px",
+            cursor: "pointer",
+            color: "#f97316",
+            fontSize: "12px",
+            fontWeight: 600,
+            letterSpacing: "1px",
+            textTransform: "uppercase",
+            flexShrink: 0,
+            transition: "all 0.2s ease",
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((prev) => !prev);
           }}
         >
+          <MessageCircleQuestion size={13} strokeWidth={2.5} />
+          {isOpen ? (
+            <>
+              Hide
+              <ChevronUp size={12} strokeWidth={2.5} />
+            </>
+          ) : (
+            <>
+              Show
+              <ChevronDown size={12} strokeWidth={2.5} />
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Collapsible panel */}
+      <div
+        style={{
+          overflow: "hidden",
+          maxHeight: isOpen ? "600px" : "0px",
+          opacity: isOpen ? 1 : 0,
+          transition: "max-height 0.35s ease, opacity 0.25s ease",
+        }}
+      >
+        {/* Two-column grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "10px",
+            background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(16px)",
+            borderRadius: "16px",
+            padding: "14px",
+            border: "1px solid rgba(249,115,22,0.15)",
+            boxShadow:
+              "0 0 0 1px rgba(255,255,255,0.04) inset, 0 20px 60px rgba(0,0,0,0.6)",
+          }}
+        >
+          {/* Left column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {leftFAQs.map((faq) => (
+              <FAQButton
+                key={faq.id}
+                faq={faq}
+                loading={loading}
+                onClick={handleQuestionClick}
+              />
+            ))}
+          </div>
+
+          {/* Right column with subtle divider */}
           <div
             style={{
-              position: "absolute",
-              left: "-6px",
-              top: "10%",
-              bottom: "10%",
-              width: "1px",
-              background:
-                "linear-gradient(180deg, transparent, rgba(249,115,22,0.3), transparent)",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
             }}
-          />
-          {rightFAQs.map((faq) => (
-            <FAQButton
-              key={faq.id}
-              faq={faq}
-              loading={loading}
-              onClick={handleQuestionClick}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: "-6px",
+                top: "10%",
+                bottom: "10%",
+                width: "1px",
+                background:
+                  "linear-gradient(180deg, transparent, rgba(249,115,22,0.3), transparent)",
+              }}
             />
-          ))}
+            {rightFAQs.map((faq) => (
+              <FAQButton
+                key={faq.id}
+                faq={faq}
+                loading={loading}
+                onClick={handleQuestionClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
       <style>{`
-
+        .faq-toggle-btn:hover {
+          background: rgba(249,115,22,0.3) !important;
+          border-color: rgba(249,115,22,0.6) !important;
+          box-shadow: 0 0 12px rgba(249,115,22,0.2);
+        }
 
         .faq-btn {
           transition: all 0.2s ease;
@@ -170,55 +232,55 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
 const FAQButton = ({ faq, loading, onClick }) => {
   const { Icon } = faq;
   return (
-  <button
-    className="faq-btn"
-    disabled={loading}
-    onClick={() => onClick(faq.question)}
-    style={{
-      display: "flex",
-      alignItems: "flex-start",
-      gap: "10px",
-      textAlign: "left",
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.07)",
-      borderRadius: "10px",
-      padding: "10px 12px",
-      cursor: loading ? "not-allowed" : "pointer",
-      opacity: loading ? 0.3 : 1,
-      width: "100%",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    }}
-  >
-    <span
-      className="faq-icon"
+    <button
+      className="faq-btn"
+      disabled={loading}
+      onClick={() => onClick(faq.question)}
       style={{
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minWidth: "28px",
-        height: "28px",
-        background: "rgba(249,115,22,0.15)",
-        borderRadius: "7px",
-        transition: "background 0.2s ease",
-        color: "#f97316",
+        alignItems: "flex-start",
+        gap: "10px",
+        textAlign: "left",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderRadius: "10px",
+        padding: "10px 12px",
+        cursor: loading ? "not-allowed" : "pointer",
+        opacity: loading ? 0.3 : 1,
+        width: "100%",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
       }}
     >
-      <Icon size={15} strokeWidth={2} />
-    </span>
-    <span
-      className="faq-text"
-      style={{
-        color: "#cbd5e1",
-        fontSize: "15px",
-        fontWeight: 500,
-        lineHeight: "1.4",
-        letterSpacing: "0.2px",
-        transition: "color 0.2s ease",
-      }}
-    >
-      {faq.question}
-    </span>
-  </button>
+      <span
+        className="faq-icon"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "28px",
+          height: "28px",
+          background: "rgba(249,115,22,0.15)",
+          borderRadius: "7px",
+          transition: "background 0.2s ease",
+          color: "#f97316",
+        }}
+      >
+        <Icon size={15} strokeWidth={2} />
+      </span>
+      <span
+        className="faq-text"
+        style={{
+          color: "#cbd5e1",
+          fontSize: "15px",
+          fontWeight: 500,
+          lineHeight: "1.4",
+          letterSpacing: "0.2px",
+          transition: "color 0.2s ease",
+        }}
+      >
+        {faq.question}
+      </span>
+    </button>
   );
 };
 

@@ -4,7 +4,9 @@
 
 import { auth } from "../../firebaseConfig";
 
-const API_BASE = "http://localhost:4000" //process.env.REACT_APP_API_URL ?? '';
+// http://localhost:4000
+
+const API_BASE = "https://oqulix-chat-server.onrender.com" //process.env.REACT_APP_API_URL ?? '';
 
 export async function uploadFile(file) {
   const form = new FormData();
@@ -25,8 +27,7 @@ export async function uploadFile(file) {
 
 
 
-
-export async function askQuestion(question, userId, language, previousAnswer) {
+export async function askQuestion(question, userId, language, previousAnswer, onChunk) {
   console.log("yes its from here");
   
   const payload = { question, userId, language, previousAnswer };
@@ -42,5 +43,40 @@ export async function askQuestion(question, userId, language, previousAnswer) {
     throw new Error(text || 'Ask failed');
   }
 
-  return res.json(); // expected { question, answer, userId }
+  // ✅ STREAMING - read chunks as they arrive
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let fullAnswer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    
+    if (done) {
+      console.log("✅ Stream complete. Full answer:", fullAnswer);
+      return { answer: fullAnswer };
+    }
+
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = JSON.parse(line.slice(6));
+        
+        if (data.chunk) {
+          fullAnswer += data.chunk;
+          console.log("🟢 Received chunk:", data.chunk);
+          
+          // ✅ CALL CALLBACK WITH EACH CHUNK
+          if (onChunk) {
+            onChunk(data.chunk);
+          }
+        }
+        
+        if (data.done) {
+          return { answer: fullAnswer };
+        }
+      }
+    }
+  }
 }
