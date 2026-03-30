@@ -215,7 +215,7 @@ const SpeechToText = ({
 
   <button
     onClick={handleButtonClick}
-    disabled={talking }
+    disabled={talking || isListening}
     className={`
       relative w-30 h-30 rounded-full
       flex flex-col items-center justify-center
