@@ -96,6 +96,7 @@ if (audioRef.current) {
 
 const subtitleRef = useRef("");
 
+
 const handleAsk = async (questionToAsk) => {
   setSubtitle("")
   setLoading(true);
@@ -476,12 +477,12 @@ const handleAsk = async (questionToAsk) => {
     </label>
 
 </div>
-      {/* <button
+      <button
         onClick={logoutUser}
         className="bg-white text-orange-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition"
       >
         Logout
-      </button> */}
+      </button>
 
       
     </div>
