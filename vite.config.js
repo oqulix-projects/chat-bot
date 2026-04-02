@@ -6,7 +6,7 @@ import basicSsl from "@vitejs/plugin-basic-ssl";
 export default defineConfig({
   plugins: [
     react(),
-    basicSsl(), // ✅ ADD THIS LINE
+    // basicSsl(), // ✅ ADD THIS LINE
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
@@ -42,10 +42,5 @@ export default defineConfig({
         ]
       }
     })
-  ],
-  server: {
-    host: true,      // better than 0.0.0.0
-    port: 5173,
-    https: true      // ✅ IMPORTANT
-  }
+  ]
 })

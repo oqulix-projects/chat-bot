@@ -14,6 +14,11 @@ import FAQ from "./FAQ";
 import LaptopsShowcase from "./LaptopsShowcase";
 import Oq from "./Oq";
 import { Send, X } from "lucide-react";
+// 1. Import at the top
+import ThinkingLoader from "./ThinkingLoader";
+
+// 2. Drop it anywhere in the JSX (before the closing </div>)
+
 
 
 // 🌟 OPTIMIZATION 1: Move constants OUTSIDE the component to ensure stability (never re-created)
@@ -896,10 +901,9 @@ const handleAsk = async (questionToAsk) => {
 
 
     {/* ================= CONTROL PANEL (LEFT FLOATING) ================= */}
-    
 
 
-
+<ThinkingLoader visible={loading} />
     {/* ================= CAMERA ================= */}
     {cameraDetection && (
       <div className="absolute bottom-6 left-6">
