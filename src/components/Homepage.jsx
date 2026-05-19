@@ -421,10 +421,16 @@ const handleAsk = async (questionToAsk) => {
       <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-pink-600/10 blur-[120px] pointer-events-none"></div>
 
       {/* Main Interactive Mobile Viewport */}
-      <div className="w-full h-[100dvh] md:h-[860px] md:max-w-[420px] md:rounded-[40px] md:border-[10px] md:border-zinc-800/90 md:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.9)]   text-white flex flex-col relative overflow-hidden transition-all duration-300">
+      <div className="w-full h-full fixed inset-0 md:relative md:inset-auto md:h-[860px] md:max-w-[420px] md:rounded-[40px] md:border-[10px] md:border-zinc-800/90 md:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.9)] text-white flex flex-col overflow-hidden transition-all duration-300">
         
         {/* ================= COMPACT MOBILE HEADER ================= */}
-        <div className="bg-orange-500/90 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-md z-40 border-b border-orange-400/20">
+        <div 
+          className="bg-orange-500/90 backdrop-blur-md px-4 flex items-center justify-between shadow-md z-40 border-b border-orange-400/20"
+          style={{
+            paddingTop: "max(12px, env(safe-area-inset-top))",
+            paddingBottom: "12px"
+          }}
+        >
           <div className="flex items-center gap-2">
             <img src="/myg.png" className="h-8 rounded" alt="MYG Logo" style={{ width: '60px' }} />
             <div className="flex flex-col">
@@ -528,10 +534,11 @@ const handleAsk = async (questionToAsk) => {
         >
           {talking && (
             <div 
-              className="fixed z-50 animate-calloutIn"
+              className="absolute z-50 animate-calloutIn"
               style={{ 
-                top: "180px", // Positioned bottom center above the glass panel
+                bottom: "125px", // Positioned bottom center above the glass panel
                 left: "50%",
+                transform: "translateX(-50%)"
               }}
             >
               <button 
@@ -573,12 +580,13 @@ const handleAsk = async (questionToAsk) => {
 
           {/* Glass Panel */}
           <div
-            className="flex flex-col gap-3 p-4 pb-6"
+            className="flex flex-col gap-3 p-4"
             style={{
               background: "rgba(10, 10, 12, 0.88)",
               backdropFilter: "blur(24px)",
               borderTop: "1px solid rgba(249,115,22,0.22)",
               boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
+              paddingBottom: "max(24px, env(safe-area-inset-bottom))"
             }}
           >
             {/* Top orange gradient rule */}
