@@ -2,8 +2,6 @@
 // File: src/services/service.js
 // Small helper service to call the backend endpoints (/upload and /ask)
 
-import { auth } from "../../firebaseConfig";
-
 // http://localhost:4000
 // https://oqulix-chat-server.onrender.com
 

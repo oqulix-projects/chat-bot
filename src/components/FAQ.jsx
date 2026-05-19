@@ -13,7 +13,7 @@ const showroomFAQs = [
 ];
 
 const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleQuestionClick = (questionText) => {
     handleAsk(questionText);
@@ -29,11 +29,10 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
     <div
       style={{
         position: "absolute",
-        top: "112px",
-        right: "24px",
-        marginTop: "10px",
-        marginLeft: "20px",
-        width: "95%",
+        top: "70px",
+        left: "12px",
+        right: "12px",
+        width: "calc(100% - 24px)",
         zIndex: 30,
       }}
     >
@@ -61,9 +60,9 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
         <p
           style={{
             color: "#d1d5db",
-            fontSize: "15px",
+            fontSize: "13px",
             fontWeight: 700,
-            letterSpacing: "3px",
+            letterSpacing: "2px",
             textTransform: "uppercase",
             margin: 0,
             userSelect: "none",
@@ -96,7 +95,7 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
             padding: "4px 10px",
             cursor: "pointer",
             color: "#f97316",
-            fontSize: "12px",
+            fontSize: "11px",
             fontWeight: 600,
             letterSpacing: "1px",
             textTransform: "uppercase",
@@ -127,67 +126,36 @@ const FAQ = ({ handleAsk, setShowShowcase, loading }) => {
       <div
         style={{
           overflow: "hidden",
-          maxHeight: isOpen ? "600px" : "0px",
+          maxHeight: isOpen ? "400px" : "0px",
           opacity: isOpen ? 1 : 0,
           transition: "max-height 0.35s ease, opacity 0.25s ease",
         }}
       >
-        {/* Two-column grid */}
+        {/* Scrollable single-column list */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "10px",
-            background: "rgba(0,0,0,0.55)",
-            backdropFilter: "blur(16px)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            background: "rgba(15, 23, 42, 0.95)",
+            backdropFilter: "blur(24px)",
             borderRadius: "16px",
-            padding: "14px",
-            border: "1px solid rgba(249,115,22,0.15)",
-            boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.04) inset, 0 20px 60px rgba(0,0,0,0.6)",
+            padding: "12px",
+            border: "1px solid rgba(249,115,22,0.2)",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+            maxHeight: "260px",
+            overflowY: "auto",
           }}
+          className="no-scrollbar"
         >
-          {/* Left column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {leftFAQs.map((faq) => (
-              <FAQButton
-                key={faq.id}
-                faq={faq}
-                loading={loading}
-                onClick={handleQuestionClick}
-              />
-            ))}
-          </div>
-
-          {/* Right column with subtle divider */}
-          <div
-            style={{
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                left: "-6px",
-                top: "10%",
-                bottom: "10%",
-                width: "1px",
-                background:
-                  "linear-gradient(180deg, transparent, rgba(249,115,22,0.3), transparent)",
-              }}
+          {showroomFAQs.map((faq) => (
+            <FAQButton
+              key={faq.id}
+              faq={faq}
+              loading={loading}
+              onClick={handleQuestionClick}
             />
-            {rightFAQs.map((faq) => (
-              <FAQButton
-                key={faq.id}
-                faq={faq}
-                loading={loading}
-                onClick={handleQuestionClick}
-              />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 

@@ -211,27 +211,25 @@ const SpeechToText = ({
         onClick={handleButtonClick}
         disabled={isDisabled}
         className={`
-          relative w-30 h-30 rounded-full
-          flex flex-col items-center justify-center
-          text-white font-semibold
+          relative w-11 h-11 rounded-full
+          flex items-center justify-center
+          text-white
           transition-all duration-200
           active:scale-95
-          shadow-xl
+          shadow-md
           ${recording
-            ? "bg-gradient-to-br from-orange-500 to-pink-600 animate-pulse"
-            : "bg-gradient-to-br from-orange-600 to-orange-400 hover:scale-105"}
+            ? "bg-gradient-to-br from-red-500 to-red-600 animate-pulse border border-red-400/40"
+            : "bg-orange-500 hover:bg-orange-600 hover:scale-105 border border-orange-400/20"}
           ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >
         {recording ? (
           <>
-            {/* Tap to stop */}
-            <i className="fa-solid fa-stop text-3xl mb-2"></i>
-            <span className="text-sm tracking-wide">Tap to stop</span>
-            <span className="absolute inset-0 rounded-full border-4 border-orange-400 animate-ping opacity-40"></span>
+            <i className="fa-solid fa-stop text-base"></i>
+            <span className="absolute inset-0 rounded-full border-2 border-red-400 animate-ping opacity-50"></span>
           </>
         ) : (
-          <i className="fa-solid fa-microphone text-4xl"></i>
+          <i className="fa-solid fa-microphone text-lg"></i>
         )}
       </button>
     </div>
